@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐎 Kim Kazanır? - Tam Veri Analizi</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        .container { max-width: 1350px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.15); }
+        h1 { text-align: center; color: #1e3a8a; }
+        label { display: block; margin: 12px 0 6px; font-weight: bold; color: #1e40af; }
+        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+        button { background: #1e40af; color: white; padding: 14px 28px; border: none; border-radius: 6px; cursor: pointer; font-size: 17px; margin: 8px 4px; }
+        button:hover { background: #1e3a8a; }
+        .high { background: #d4edda; border-left: 6px solid #22c55e; padding: 18px; border-radius: 8px; margin: 15px 0; }
+        .medium { background: #fef3c7; border-left: 6px solid #eab308; padding: 18px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+        th { background: #1e3a8a; color: white; }
+        .favori { background: #bbf7d0 !important; font-weight: bold; }
+        .scroll { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🐎 At Yarışı - Kim Kazanır? (v19)</h1>
+    <p style="text-align:center; color:#64748b;">Tüm veriler + 181 uzman kuralı yüklü • Kategori, Kilo ve Handikap Puanı artık tüm tablolarda • TJK canlı getir önizleme ve veri kalitesi göstergesiyle güçlendirildi</p>
+
+    <div style="background:#1e3a8a; color:white; padding:14px 18px; border-radius:8px; margin:15px 0;">
+        <strong>🧠 Süper Sorgulama:</strong> Yaş/Irk grubu + Koşu kategorisi + Pist + (opsiyonel) Mesafe seç, hem geçmiş veriden (içe aktardığın CSV/TJK verisi dahil) istatistik hem de uzman kural kitabından (451 kuraldan ayrıştırılmış 181 koşu-bloğu) tavsiyeyi aynı anda al.
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; border:2px solid #1e3a8a; border-radius:10px; padding:18px; background:#eef2ff;">
+        <div>
+            <label>Yaş / Irk Grubu</label>
+            <select id="superGrup">
+                <option value="2 yaşlı ingilizler">2 Yaşlı İngilizler</option>
+                <option value="3 yaşlı ingilizler">3 Yaşlı İngilizler</option>
+                <option value="3 ve yukarı ingilizler" selected>3 ve Yukarı İngilizler</option>
+                <option value="4 ve yukarı ingilizler">4 ve Yukarı İngilizler</option>
+                <option value="3 yaşlı araplar">3 Yaşlı Araplar</option>
+                <option value="3 4 yaş araplar">3-4 Yaşlı Araplar</option>
+                <option value="4 ve yukarı araplar">4 ve Yukarı Araplar</option>
+            </select>
+        </div>
+        <div>
+            <label>Koşu Cinsi</label>
+            <select id="superKategori">
+                <option value="maiden">Maiden</option>
+                <option value="maiden satış">Maiden/Satış</option>
+                <option value="şartlı 1">Şartlı 1</option>
+                <option value="şartlı 2">Şartlı 2</option>
+                <option value="şartlı 3">Şartlı 3</option>
+                <option value="şartlı 4" selected>Şartlı 4</option>
+                <option value="şartlı 5">Şartlı 5</option>
+                <option value="şartlı 10">Şartlı 10</option>
+                <option value="şartlı 11">Şartlı 11</option>
+                <option value="şartlı 12">Şartlı 12</option>
+                <option value="şartlı 19">Şartlı 19</option>
+                <option value="şartlı 27">Şartlı 27</option>
+                <option value="şartlı">Şartlı (Genel)</option>
+                <option value="handikap 13">Handikap 13</option>
+                <option value="handikap 14">Handikap 14</option>
+                <option value="handikap 15">Handikap 15</option>
+                <option value="handikap 16">Handikap 16</option>
+                <option value="handikap 17">Handikap 17</option>
+                <option value="handikap 21">Handikap 21 (Kısa Vade)</option>
+                <option value="handikap 22">Handikap 22 (Kısa Vade)</option>
+                <option value="handikap 24">Handikap 24 (Kısa Vade)</option>
+                <option value="handikap">Handikap (Genel)</option>
+                <option value="kv 6">KV-6</option>
+                <option value="kv 7">KV-7</option>
+                <option value="kv 8">KV-8</option>
+                <option value="kv 9">KV-9</option>
+                <option value="kv 10">KV-10</option>
+                <option value="kv 11">KV-11</option>
+                <option value="kv 18">KV-18</option>
+                <option value="kv 21">KV-21</option>
+                <option value="kv 22">KV-22</option>
+                <option value="kv 23">KV-23</option>
+                <option value="kv 24">KV-24</option>
+                <option value="kv 25">KV-25</option>
+                <option value="kv 26">KV-26</option>
+                <option value="satış 1">Satış 1</option>
+                <option value="satış 2">Satış 2</option>
+                <option value="satış 3">Satış 3</option>
+                <option value="satış 4">Satış 4</option>
+                <option value="g 1">G1</option>
+                <option value="g 2">G2</option>
+                <option value="g 3">G3</option>
+                <option value="g3 handikap">G3 Handikap</option>
+                <option value="grup">Grup</option>
+                <option value="açık">Açık Grup (1-2-3)</option>
+                <option value="amatör">Amatör</option>
+                <option value="amatör binici">Amatör Binici</option>
+                <option value="kadın amatör binici">Kadın Amatör Binici</option>
+                <option value="kadın binici">Kadın Binici</option>
+                <option value="a 2">A2</option>
+                <option value="a 3">A3</option>
+            </select>
+        </div>
+        <div>
+            <label>Pist</label>
+            <select id="superPist">
+                <option value="çim">Çim</option>
+                <option value="kum" selected>Kum</option>
+                <option value="sentetik">Sentetik</option>
+            </select>
+        </div>
+        <div>
+            <label>Mesafe (m) — opsiyonel</label>
+            <input type="number" id="superMesafe" placeholder="örn: 1200 (boş bırakılırsa tüm mesafeler)">
+        </div>
+    </div>
+    <button onclick="superSorgula()" style="width:100%; margin-top:14px; background:#b91c1c;">🧠 Süper Sorgula (Veri + Uzman Kuralı)</button>
+    <div id="superSonuc" style="margin:20px 0;"></div>
+
+    <h2>🌐 TJK'dan Canlı Veri Çek (Deneysel)</h2>
+    <p style="color:#64748b; font-size:14px;">TJK'nın resmi Koşu Sorgulama sayfasına doğrudan bağlanmayı dener. Tarayıcı CORS politikası nedeniyle engellenirse, altta çıkan "yeni sekmede aç" bağlantısını kullanıp sonucu kopyala/yapıştır ile içe aktarabilirsin.</p>
+
+    <details style="border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px; background:#f8fafc;">
+        <summary style="cursor:pointer; font-weight:bold; color:#0f766e;">🔒 CORS engelini kalıcı çöz (kendi ücretsiz proxy'ni kur — 2 dakika, tek seferlik)</summary>
+        <div style="margin-top:12px; font-size:14px; color:#334155; line-height:1.6;">
+            <p>Aşağıdaki genel proxy'ler (codetabs, allorigins vb.) ücretsiz ve paylaşımlı oldukları için bazen aynı anda yavaş/kapalı olabiliyor. <strong>Kesin ve kalıcı çözüm</strong>: kendi adına, ücretsiz bir Cloudflare Worker proxy'si kurmak. Bir kere kurulur, bir daha hiç uğraşmazsın.</p>
+            <ol style="padding-left:20px;">
+                <li><a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a> adresinden ücretsiz hesap aç (kredi kartı istemez).</li>
+                <li>Sol menüden <strong>Workers & Pages → Create → Create Worker</strong> seç, bir isim ver (örn. <code>tjk-proxy</code>) ve Deploy'a bas.</li>
+                <li>Açılan editördeki örnek kodu sil, aşağıdaki kodu yapıştır ve <strong>Deploy</strong>'a bas:</li>
+            </ol>
+            <textarea readonly onclick="this.select()" style="width:100%; height:170px; font-family:monospace; font-size:12px; background:#0f172a; color:#e2e8f0; padding:10px; border-radius:6px;">export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const hedef = url.searchParams.get('url');
+    if (!hedef) return new Response('url parametresi eksik', { status: 400 });
+    try {
+      const yanit = await fetch(hedef, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const gövde = await yanit.text();
+      return new Response(gövde, {
+        status: yanit.status,
+        headers: {
+          'Content-Type': yanit.headers.get('Content-Type') || 'text/html; charset=utf-8',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    } catch (e) {
+      return new Response('Proxy hatası: ' + e.message, { status: 502 });
+    }
+  }
+};</textarea>
+            <p style="margin-top:10px;">4. Deploy sonrası sana verilen adres <code>https://tjk-proxy.KULLANICI-ADIN.workers.dev</code> gibi görünecek. Bu adresi aşağıdaki kutuya <strong>sonuna <code>/?url=</code> ekleyerek</strong> yapıştır, örn: <code>https://tjk-proxy.adin.workers.dev/?url=</code></p>
+            <p>Bu proxy artık sadece sana ait olduğu için başkalarıyla paylaşılmıyor, rate-limit'e takılmıyor ve genel proxy'lerden çok daha güvenilir çalışıyor. Kutuyu boş bırakırsan uygulama otomatik olarak genel proxy listesine döner.</p>
+        </div>
+    </details>
+
+    <div style="margin-bottom:14px;">
+        <label>Kendi CORS Proxy Adresin (opsiyonel — doldurursan önce bu denenir)</label>
+        <input type="text" id="ozelProxyUrl" placeholder="örn: https://tjk-proxy.adin.workers.dev/?url=" oninput="localStorage.setItem('kk_ozelProxyUrl', this.value)">
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; border:2px solid #b91c1c; border-radius:10px; padding:18px; background:#fef2f2;">
+        <div>
+            <label>Tarih Başlangıç</label>
+            <input type="text" id="tjkTarihStart" placeholder="gg.aa.yyyy">
+        </div>
+        <div>
+            <label>Tarih Bitiş</label>
+            <input type="text" id="tjkTarihEnd" placeholder="gg.aa.yyyy">
+        </div>
+        <div>
+            <label>Şehir</label>
+            <select id="tjkSehir">
+                <option value="-1" selected>Tüm Şehirler</option>
+                <option value="1">Adana</option>
+                <option value="5">Ankara</option>
+                <option value="10">Antalya</option>
+                <option value="4">Bursa</option>
+                <option value="8">Diyarbakır</option>
+                <option value="7">Elazığ</option>
+                <option value="3">İstanbul</option>
+                <option value="2">İzmir</option>
+                <option value="9">Kocaeli</option>
+                <option value="6">Şanlıurfa</option>
+            </select>
+        </div>
+        <div>
+            <label>Irk</label>
+            <select id="tjkIrk">
+                <option value="-1" selected>Tüm Irklar</option>
+                <option value="2">Arap</option>
+                <option value="1">İngiliz</option>
+            </select>
+        </div>
+        <div>
+            <label>Cinsiyet</label>
+            <select id="tjkCinsiyet">
+                <option value="-1" selected>Tüm Cinsiyetler</option>
+                <option value="2">Dişi</option>
+                <option value="4">Dişi ve Karışık</option>
+                <option value="1">Erkek</option>
+                <option value="3">Erkek ve Karışık</option>
+            </select>
+        </div>
+        <div>
+            <label>Pist</label>
+            <select id="tjkPist">
+                <option value="-1" selected>Tüm Pistler</option>
+                <option value="1">Çim</option>
+                <option value="2">Kum</option>
+                <option value="4">Sentetik</option>
+            </select>
+        </div>
+        <div style="grid-column: span 2;">
+            <label>Yaş / Irk Grubu (Ctrl ile çoklu seçim, boş = tümü)</label>
+            <select id="tjkGrup" multiple size="6">
+                <option value="1">2 Yaşlı İngilizler</option>
+                <option value="2">2 ve Yukarı İngilizler</option>
+                <option value="3">3 Yaşlı İngilizler</option>
+                <option value="4">3 ve Yukarı İngilizler</option>
+                <option value="6">3 Yaşlı Araplar</option>
+                <option value="7">3 ve Yukarı Araplar</option>
+                <option value="8">4 Yaşlı Araplar</option>
+                <option value="5">4 ve Yukarı İngilizler</option>
+                <option value="9">4 ve Yukarı Araplar</option>
+                <option value="10">5 ve Yukarı Araplar</option>
+            </select>
+        </div>
+        <div style="grid-column: span 2;">
+            <label>Koşu Cinsi (Ctrl ile çoklu seçim, boş = tümü)</label>
+            <select id="tjkKosuCinsi" multiple size="6">
+                <option value="1">G 1</option>
+                <option value="2">G 2</option>
+                <option value="3">G 3</option>
+                <option value="64">G3 Handikap</option>
+                <option value="57">Grup</option>
+                <option value="56">Handikap</option>
+                <option value="13">Handikap 13</option>
+                <option value="14">Handikap 14</option>
+                <option value="15">Handikap 15</option>
+                <option value="16">Handikap 16</option>
+                <option value="17">Handikap 17</option>
+                <option value="59">Handikap 21</option>
+                <option value="60">Handikap 22</option>
+                <option value="61">Handikap 24</option>
+                <option value="62">Kısa Vade Handikap 22</option>
+                <option value="63">Kısa Vade Handikap 24</option>
+                <option value="9">KV-6</option>
+                <option value="10">KV-7</option>
+                <option value="11">KV-8</option>
+                <option value="12">KV-9</option>
+                <option value="31">KV-10</option>
+                <option value="32">KV-11</option>
+                <option value="18">KV-18</option>
+                <option value="21">KV-21</option>
+                <option value="22">KV-22</option>
+                <option value="23">KV-23</option>
+                <option value="24">KV-24</option>
+                <option value="25">KV-25</option>
+                <option value="26">Maiden</option>
+                <option value="54">Maiden/Satış</option>
+                <option value="67">Maiden Satış (YD)</option>
+                <option value="68">Maiden Opsiyonel Satış (YD)</option>
+                <option value="65">Satış (YD)</option>
+                <option value="66">Opsiyonel Satış (YD)</option>
+                <option value="41">SATIŞ 1</option>
+                <option value="42">SATIŞ 2</option>
+                <option value="43">SATIŞ 3</option>
+                <option value="44">SATIŞ 4</option>
+                <option value="58">Şartlı</option>
+                <option value="4">ŞARTLI 1</option>
+                <option value="5">ŞARTLI 2</option>
+                <option value="6">ŞARTLI 3</option>
+                <option value="7">ŞARTLI 4</option>
+                <option value="8">ŞARTLI 5</option>
+                <option value="27">ŞARTLI 11</option>
+                <option value="29">ŞARTLI 10</option>
+                <option value="33">ŞARTLI 12</option>
+                <option value="55">ŞARTLI 19</option>
+                <option value="70">ŞARTLI 27</option>
+                <option value="28">Amatör</option>
+                <option value="69">Amatör Binici</option>
+                <option value="30">KADIN AMATÖR BİNİCİ</option>
+                <option value="35">KADIN BİNİCİ</option>
+                <option value="52">A 2</option>
+                <option value="53">A 3</option>
+                <option value="50">YurtDışıBoş</option>
+            </select>
+        </div>
+        <div>
+            <label>Yamak (Ctrl ile çoklu, boş = tümü)</label>
+            <select id="tjkYamak" multiple size="4">
+                <option value="4">Yamak-0</option>
+                <option value="1">Yamak-1</option>
+                <option value="2">Yamak-2</option>
+                <option value="3">Yamak-3</option>
+            </select>
+        </div>
+        <div>
+            <label>Mesafe (Ctrl ile çoklu, boş = tümü)</label>
+            <select id="tjkMesafe" multiple size="4">
+                <option value="600">600</option><option value="800">800</option><option value="900">900</option>
+                <option value="950">950</option><option value="1000">1000</option><option value="1100">1100</option>
+                <option value="1200">1200</option><option value="1207">1207</option><option value="1300">1300</option>
+                <option value="1400">1400</option><option value="1408">1408</option><option value="1440">1440</option>
+                <option value="1500">1500</option><option value="1600">1600</option><option value="1609">1609</option>
+                <option value="1690">1690</option><option value="1700">1700</option><option value="1800">1800</option>
+                <option value="1810">1810</option><option value="1850">1850</option><option value="1900">1900</option>
+                <option value="1920">1920</option><option value="1950">1950</option><option value="2000">2000</option>
+                <option value="2100">2100</option><option value="2200">2200</option><option value="2300">2300</option>
+                <option value="2400">2400</option><option value="2403">2403</option><option value="2410">2410</option>
+                <option value="2413">2413</option><option value="2485">2485</option><option value="2600">2600</option>
+                <option value="2800">2800</option><option value="3000">3000</option><option value="3200">3200</option>
+                <option value="3400">3400</option><option value="3600">3600</option><option value="4225">4225</option>
+            </select>
+        </div>
+    </div>
+    <button onclick="tjkCanliSorgula()" style="width:100%; margin-top:14px; background:#0f766e;">🌐 TJK'dan Canlı Getir</button>
+    <div id="tjkUrlPreview" style="margin-top:10px; font-size:13px;"></div>
+    <div id="tjkStatus" style="margin:10px 0; font-weight:bold;"></div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:15px;">
+        <div>
+            <label>Şehir</label>
+            <select id="sehir"><option value="">Tümü</option></select>
+        </div>
+        <div>
+            <label>Pist</label>
+            <select id="pist">
+                <option value="">Tümü</option>
+                <option value="Kum">Kum</option>
+                <option value="Çim">Çim</option>
+                <option value="Sentetik">Sentetik</option>
+            </select>
+        </div>
+        <div>
+            <label>Mesafe (m)</label>
+            <input type="number" id="mesafe" placeholder="1400">
+        </div>
+        <div>
+            <label>Grup / Irk</label>
+            <select id="grup">
+                <option value="">Tümü</option>
+                <option value="İngiliz">İngiliz</option>
+                <option value="Arap">Arap</option>
+                <option value="3 Yaşlı">3 Yaşlı</option>
+                <option value="2 Yaşlı">2 Yaşlı</option>
+            </select>
+        </div>
+    </div>
+
+    <button onclick="analizYap()" style="width:100%; margin-top:20px;">🔍 Benzer Koşulları Bul ve Öneri Ver</button>
+
+    <div id="sonuc" style="margin:25px 0; font-size:17px; line-height:1.6;"></div>
+
+    <h2>🏆 At Bazlı Analiz</h2>
+    <input type="text" id="atAdi" placeholder="At ismi gir (örn: KUMSALIM)" style="width:75%;">
+    <button onclick="atAnaliz()">Atı Analiz Et</button>
+    <div id="atSonuc" style="margin-top:15px;"></div>
+
+    <h2>📥 CSV / TJK İçe Aktar</h2>
+    <p style="color:#64748b; font-size:14px;">Kolon sırası: <strong>Tarih, Şehir, No, Grup, Kategori, Yamak, Mesafe, Pist, Kilo (kazanan atın taşıdığı kilo), Ebeveynler, Ücret, Kazanan, Yaş, Derece, Handikap Puanı</strong> (tab veya virgülle ayrılmış)</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+            <label>Dosyadan İçe Aktar (.csv)</label>
+            <input type="file" id="csvDosya" accept=".csv,.txt">
+            <button onclick="csvDosyaIceAktar()" style="width:100%; margin-top:8px;">📂 Dosyayı İçe Aktar</button>
+        </div>
+        <div>
+            <label>Yapıştırarak İçe Aktar</label>
+            <textarea id="csvYapistir" rows="3" placeholder="TJK'dan veya Excel'den kopyaladığın satırları buraya yapıştır"></textarea>
+            <button onclick="csvYapistirIceAktar()" style="width:100%; margin-top:8px;">📋 Yapıştırılanı İçe Aktar</button>
+        </div>
+    </div>
+    <div id="csvSonuc" style="margin-top:10px; font-weight:bold;"></div>
+
+    <h2>📝 Koşu Analiz Yorumu</h2>
+    <p style="color:#64748b; font-size:14px;">Uzman kural kitabındaki yorumları (181 koşu-bloğu) çim / kum / sentetik bazında, istatistik hesaplamadan, doğrudan metin olarak görüntüle.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px;">
+        <div>
+            <label>Yaş / Irk Grubu</label>
+            <select id="yorumGrup">
+                <option value="2 yaşlı ingilizler">2 Yaşlı İngilizler</option>
+                <option value="3 yaşlı ingilizler">3 Yaşlı İngilizler</option>
+                <option value="3 ve yukarı ingilizler" selected>3 ve Yukarı İngilizler</option>
+                <option value="4 ve yukarı ingilizler">4 ve Yukarı İngilizler</option>
+                <option value="3 yaşlı araplar">3 Yaşlı Araplar</option>
+                <option value="3 4 yaş araplar">3-4 Yaşlı Araplar</option>
+                <option value="4 ve yukarı araplar">4 ve Yukarı Araplar</option>
+            </select>
+        </div>
+        <div>
+            <label>Koşu Cinsi</label>
+            <select id="yorumKategori">
+                <option value="maiden">Maiden</option>
+                <option value="maiden satış">Maiden/Satış</option>
+                <option value="şartlı 1">Şartlı 1</option>
+                <option value="şartlı 2">Şartlı 2</option>
+                <option value="şartlı 3">Şartlı 3</option>
+                <option value="şartlı 4" selected>Şartlı 4</option>
+                <option value="şartlı 5">Şartlı 5</option>
+                <option value="şartlı 10">Şartlı 10</option>
+                <option value="şartlı 11">Şartlı 11</option>
+                <option value="şartlı 12">Şartlı 12</option>
+                <option value="şartlı 19">Şartlı 19</option>
+                <option value="şartlı 27">Şartlı 27</option>
+                <option value="şartlı">Şartlı (Genel)</option>
+                <option value="handikap 13">Handikap 13</option>
+                <option value="handikap 14">Handikap 14</option>
+                <option value="handikap 15">Handikap 15</option>
+                <option value="handikap 16">Handikap 16</option>
+                <option value="handikap 17">Handikap 17</option>
+                <option value="handikap 21">Handikap 21 (Kısa Vade)</option>
+                <option value="handikap 22">Handikap 22 (Kısa Vade)</option>
+                <option value="handikap 24">Handikap 24 (Kısa Vade)</option>
+                <option value="handikap">Handikap (Genel)</option>
+                <option value="kv 6">KV-6</option>
+                <option value="kv 7">KV-7</option>
+                <option value="kv 8">KV-8</option>
+                <option value="kv 9">KV-9</option>
+                <option value="kv 10">KV-10</option>
+                <option value="kv 11">KV-11</option>
+                <option value="kv 18">KV-18</option>
+                <option value="kv 21">KV-21</option>
+                <option value="kv 22">KV-22</option>
+                <option value="kv 23">KV-23</option>
+                <option value="kv 24">KV-24</option>
+                <option value="kv 25">KV-25</option>
+                <option value="kv 26">KV-26</option>
+                <option value="satış 1">Satış 1</option>
+                <option value="satış 2">Satış 2</option>
+                <option value="satış 3">Satış 3</option>
+                <option value="satış 4">Satış 4</option>
+                <option value="g 1">G1</option>
+                <option value="g 2">G2</option>
+                <option value="g 3">G3</option>
+                <option value="g3 handikap">G3 Handikap</option>
+                <option value="grup">Grup</option>
+                <option value="açık">Açık Grup (1-2-3)</option>
+                <option value="amatör">Amatör</option>
+                <option value="amatör binici">Amatör Binici</option>
+                <option value="kadın amatör binici">Kadın Amatör Binici</option>
+                <option value="kadın binici">Kadın Binici</option>
+                <option value="a 2">A2</option>
+                <option value="a 3">A3</option>
+            </select>
+        </div>
+        <div>
+            <label>Pist</label>
+            <select id="yorumPist">
+                <option value="tümü" selected>Tümü (Çim + Kum + Sentetik)</option>
+                <option value="çim">Sadece Çim</option>
+                <option value="kum">Sadece Kum</option>
+                <option value="sentetik">Sadece Sentetik</option>
+            </select>
+        </div>
+        <div>
+            <label>Mesafe (m) — opsiyonel</label>
+            <input type="number" id="yorumMesafe" placeholder="örn: 1200 (girilirse geçmiş verilerle karşılaştırılır)">
+        </div>
+    </div>
+    <button onclick="kosuYorumGoster()" style="width:100%; margin-top:14px;">📝 Yorumu Göster</button>
+    <div id="kosuYorumSonuc" style="margin:20px 0;"></div>
+
+    <h2>📋 Son Koşular</h2>
+    <div class="scroll">
+        <table id="mainTable"></table>
+    </div>
+</div>
+
+<script>
+// TAM VERİ SETİ (Hepsi burada)
+const rawData = `25.06.2026	Bursa	1	3 ve Yukarı İngilizler	Handikap 14 /H2		1200	Kum	56,5	MYBOYCHARLIE (IRE) - DONT MAKE ME CRY	400.000	KUMSALIM	5y d k	1.14.86	42
+25.06.2026	Bursa	2	3 Yaşlı Araplar	Maiden		1300	Kum	57	HIZLITAY - TANEMCAN	545.000	TERZİCAN	3y k e	1.32.94	
+25.06.2026	Bursa	3	3 Yaşlı İngilizler	Handikap 15 /H2		1800	Çim	56	AIR VICE MARSHAL (USA) - INNOCENT GHOST	490.000	GHOST COMMANDER	3y d e	1.49.43	46
+25.06.2026	Bursa	4	2 Yaşlı İngilizler	ŞARTLI 4		1200	Kum	55	COOGER - ZVEJDAM	490.000	ONLY GIRL	2y d d	1.14.91	41
+25.06.2026	Bursa	5	4 ve Yukarı Araplar	Handikap 15 /H2		1400	Kum	56	GELİBOLU - CANBANU	490.000	ALSAKİB	4y a a	1.37.25	49
+25.06.2026	Bursa	6	3 Yaşlı Araplar	Maiden		1300	Kum	59	SONALP - YEŞİLÇAY	545.000	ERGÜNEŞ	3y d e	1.31.63	34
+25.06.2026	Bursa	7	3 Yaşlı İngilizler	Handikap 14 /Dişi /H2		1300	Kum	56	PAPA CLEM (USA) - QUEENS DREAM	400.000	LADY ONAT	3y d d	1.21.50	39
+25.06.2026	Bursa	8	3 ve Yukarı İngilizler	KV-8 /Dişi		1400	Kum	60	MR.OWEN (USA) - LADY SYLVESTER (USA)	975.000	PRENSES SYLVESTER	6y d k	1.25.45	99
+25.06.2026	Bursa	9	3 Yaşlı Araplar	Maiden		1300	Kum	57	ŞÜKRÜ - HURNCANE	545.000	DEVRAN BEY	3y a e	1.31.25	
+25.06.2026	Bursa	10	4 Yaşlı Araplar	ŞARTLI 3		1400	Kum	58	TAMERİNOĞLU - TATARKIZ	400.000	TATARUŞAĞI	4y k a	1.36.96	51
+25.06.2026	İstanbul	1	3 Yaşlı İngilizler	Maiden		1200	Sentetik	58	VICTOIRE PISA (JPN) - BELLA BRAVA	600.000	VOLITIVO	3y d e	1.13.84	36
+25.06.2026	İstanbul	2	3 Yaşlı Araplar	KV-6		1200	Sentetik	57	BUMBAİ - TUMBULSABUHA	835.000	DEDEMHAMZAREİS	3y a e	1.21.58	54
+25.06.2026	İstanbul	3	4 Yaşlı Araplar	KV-6 /Dişi		2000	Sentetik	58	DEHA - BATUŞ KIZI	835.000	HADİYE	4y d k	2.20.33	76
+25.06.2026	İstanbul	4	4 ve Yukarı Araplar	Handikap 21 /H1		2000	Sentetik	61,5	TAMERİNOĞLU - ÖZBEYZA	835.000	CAZGIR YAŞAR	5y k a	2.18.04	84
+24.06.2026	Elazığ	1	3 Yaşlı İngilizler	Maiden /Dişi		1200	Kum	60	BATTLEGROUND (USA) - MUBASHERA (USA)	395.000	GOODBYE	3y d d	1.19.09	26
+24.06.2026	Elazığ	2	2 Yaşlı İngilizler	ŞARTLI 4		1200	Kum	57	AMERİKALI - LASER GIRL	350.000	ETIQUETTE	2y d e	1.18.73	37
+24.06.2026	Elazığ	3	4 Yaşlı Araplar	ŞARTLI 5 /Dişi		1900	Kum	55	FATİH AĞA - ADALETKAYA	440.000	AL BENZE	4y k k	2.26.37	60
+24.06.2026	Elazığ	4	4 ve Yukarı Araplar	Handikap 16 /H3		1200	Kum	60	BERKCAN - DOKTORKAYA	440.000	LAVİSTAKAYA	5y k k	1.29.14	56
+24.06.2026	Elazığ	5	4 ve Yukarı Araplar	KV-7		1500	Kum	57,5	KAIZBERT (RU) - MELOŞ	585.000	DOĞAN KHAN	7y a g	1.53.35	86
+24.06.2026	Elazığ	6	3 ve Yukarı İngilizler	ŞARTLI 5		1600	Kum	60	TIZWAY (USA) - LASER GIRL	440.000	BOSTON LIGHT	5y d a	1.48.80	89
+24.06.2026	Elazığ	7	3 Yaşlı İngilizler	Maiden /Dişi		1200	Kum	55	VICTORY GALLOP (CAN) - CONSTELLATION	395.000	DENİZ LARA	3y d d	1.20.66	8
+24.06.2026	Elazığ	8	3 ve Yukarı İngilizler	Handikap 13 /H3		1200	Kum	55,5	RUN AWAY AND HIDE (USA) - DENOMINATION (USA)	210.000	MANY MORE	3y a e	1.18.95	32
+24.06.2026	İstanbul	1	3 Yaşlı İngilizler	Maiden		2000	Sentetik	58	ANGEL OF DEATH - ALWAYS ON MY MIND	600.000	HARP	3y a e	2.09.13	31
+24.06.2026	İstanbul	2	3 Yaşlı İngilizler	Handikap 16 /H2		2000	Sentetik	61	EUPRHATES (USA) - KIZIMDERİN	730.000	ŞAFAKATEŞ	3y a e	2.07.80	57
+24.06.2026	İstanbul	3	3 Yaşlı Araplar	ŞARTLI 3		1300	Sentetik	59	SERHANTAY - ARAYEKYİ	470.000	ASLANLI OVA	3y a e	1.28.48	40
+24.06.2026	İstanbul	4	4 ve Yukarı Araplar	ŞARTLI 5		2100	Sentetik	56	BABA MEVLÜT - TUTKUMUZ	730.000	FIŞ FIŞ	8y d a	2.26.18	100
+24.06.2026	İstanbul	5	3 ve Yukarı İngilizler	Handikap 15 /Dişi /H1		2100	Sentetik	54,5	TRAPPE SHOT (USA) - MY SECRET	595.000	WAITING A SUNNYDAY	4y d k	2.15.53	45
+24.06.2026	İstanbul	6	3 ve Yukarı İngilizler	Kısa Vade Handikap 24 /H1		1500	Sentetik	59,5	KANEKO - CONTROLLABLE	1.130.000	BLACK PABLO	4y d a	1.30.85	94
+24.06.2026	İstanbul	7	3 Yaşlı İngilizler	ŞARTLI 4		1400	Sentetik	58	BODEMEISTER (USA) - LADY TULPAR	595.000	BROTHER LOVIE	3y d e	1.25.55	66
+24.06.2026	İstanbul	8	3 Yaşlı İngilizler	Maiden		2000	Sentetik	58	KANEKO - ANGERONA (IRE)	600.000	CRACKAJACK	3y d e	2.09.18	35
+24.06.2026	İstanbul	9	4 Yaşlı Araplar	SATIŞ 3		1500	Sentetik	57	COŞARTAY - GÜMÜŞKANAT	630.000	TUNA ADAM	4y a a	1.41.46	68
+23.06.2026	Ankara	1	3 ve Yukarı İngilizler	ŞARTLI 3	Yamak-1	1900	Çim	55	LUXOR - CALLIAPE	470.000	STALWART HERA	5y d k	1.55.48	87
+23.06.2026	Ankara	2	2 Yaşlı İngilizler	KV-7		1200	Çim	53	SATONO ARES (JPN) - COCCINELLE	975.000	HAROLDCOOPER	2y d e	1.10.20	50
+23.06.2026	Ankara	3	3 Yaşlı İngilizler	Maiden		1500	Kum	61	AIR VICE MARSHAL (USA) - INFAMOUS (IRE)	600.000	CALL ME FREE	3y d e	1.37.24	35
+23.06.2026	Ankara	4	4 ve Yukarı Araplar	Handikap 14 /H1		2200	Çim	60,5	FİRİKYA - DEDESİNİN GÜLÜ	470.000	DEDEBATUR	4y k a	2.31.43	40
+23.06.2026	Ankara	5	3 Yaşlı İngilizler	Handikap 14 /H2		2200	Çim	59	BATTLEGROUND (USA) - AFTERNOON (IRE)	470.000	NART THE BATTLE	3y d e	2.17.00	47
+23.06.2026	Ankara	6	3 ve Yukarı İngilizler	KV-9		2000	Kum	60	KANEKO - REAL QUATRO	1.325.000	PERCY JACKSON	4y d a	2.09.78	99
+23.06.2026	Ankara	7	4 Yaşlı Araplar	Handikap 15 /H2		2100	Kum	59	ÖZHABER - BALBADEMİM	595.000	KARSAVURANLI	4y d a	2.33.88	56
+23.06.2026	Ankara	8	3 Yaşlı Araplar	KV-7		1400	Çim	54	SERDÜMEN - SU ZAMBAĞI	975.000	HÜRTAYFA	3y k e	1.31.68	46
+23.06.2026	Kocaeli	1	3 Yaşlı İngilizler	ŞARTLI 4 /Dişi		1500	Kum	55	TILSIT (USA) - LAGUNA	490.000	LAGUNA SUNSET	3y d d	1.34.18	39
+23.06.2026	Kocaeli	2	2 Yaşlı İngilizler	ŞARTLI 4		1100	Kum	57	KLIMT (USA) - NO DELUSION (USA)	490.000	DRAGON VICTORY	2y d e	1.09.96	45
+23.06.2026	Kocaeli	3	3 Yaşlı Araplar	ŞARTLI 1		1200	Kum	57	OĞLUM BURAK - İREMNAS	685.000	ASLAN İBO	3y a e	1.25.94	
+23.06.2026	Kocaeli	4	4 ve Yukarı Araplar	ŞARTLI 3		2000	Kum	57	ARASLI - SEVİNÇKAN	400.000	CEBEBEY	7y a a	2.28.10	83
+23.06.2026	Kocaeli	5	3 Yaşlı İngilizler	Handikap 15 /H2		1400	Kum	59,5	BODEMEISTER (USA) - KATUŞA	490.000	SHAWSHANK	3y d e	1.28.48	53
+23.06.2026	Kocaeli	6	3 ve Yukarı İngilizler	ŞARTLI 5		1400	Kum	60	PAPA CLEM (USA) - KOCA HATUN	630.000	LOVİBOND	4y d a	1.27.90	89
+23.06.2026	Kocaeli	7	3 ve Yukarı İngilizler	Handikap 16 /H2		1900	Kum	63	BODEMEISTER (USA) - FLY WINGS	630.000	CROWNED	5y d a	2.05.86	61
+23.06.2026	Kocaeli	8	3 Yaşlı Araplar	ŞARTLI 1		1200	Kum	57	EMBİR HAN - ALICIKUŞ	685.000	HANKUŞ	3y d e	1.24.48	
+22.06.2026	Bursa	1	3 ve Yukarı İngilizler	Handikap 16 /H2		2100	Kum	59	SPEEDY WOLF - WATCH ME	630.000	RICO PASHA	4y a a	2.17.50	61
+22.06.2026	Bursa	2	3 Yaşlı İngilizler	Maiden		1200	Çim	55	TOUCH THE WOLF - COUP DHONNEUR	545.000	ESTOCADE	3y d e	1.10.70	
+22.06.2026	Bursa	3	4 ve Yukarı Araplar	ŞARTLI 4		2400	Çim	58	BABA MEVLÜT - ATILIM	490.000	ATILIMBEYİ	6y d a	2.41.81	86
+22.06.2026	Bursa	4	3 Yaşlı İngilizler	Handikap 14 /H2		1400	Kum	57	TIGER MOTH (IRE) - MY LOVELY BOY	400.000	MUFASA	3y d e	1.26.51	42
+22.06.2026	Bursa	5	4 ve Yukarı Araplar	Handikap 14 /H2	Yamak-2	1900	Kum	58	ÖZGÜNHAN - ANAMURLU	400.000	TOZYUTTURAN	4y k a	2.17.52	44
+22.06.2026	Bursa	6	4 ve Yukarı Araplar	Handikap 14 /H2		1400	Çim	55,5	GÜMBÜRGÜMBÜR - SALDIMKAYA	400.000	GÜLÜMSE BİRAZ	4y a k	1.30.83	41
+22.06.2026	Bursa	7	3 Yaşlı İngilizler	Maiden		1200	Çim	58	MENDIP (USA) - NOT ANY MO (CAN)	545.000	VAELLA	3y d d	1.09.92	34
+22.06.2026	Bursa	8	3 ve Yukarı İngilizler	ŞARTLI 4		1400	Kum	56	FROSTED (USA) - FANCY STRIKE (USA)	490.000	APPRECIATE PROTEO	5y k a	1.25.55	90
+22.06.2026	Bursa	9	3 Yaşlı İngilizler	Maiden		1200	Çim	60	AUTHORIZED (IRE) - RED HARE (FR)	545.000	RED SMOKE	3y d d	1.11.31	36
+22.06.2026	Bursa	10	4 Yaşlı Araplar	Handikap 16 /Dişi /H2		1200	Çim	51	DEMİRTURBO - HALEPLİKIZ	630.000	YEŞİLKAYA	4y k k	1.16.92	52
+22.06.2026	Elazığ	1	3 Yaşlı İngilizler	ŞARTLI 4		2000	Kum	61	TRAPPE SHOT (USA) - BIANCA BIANCA	350.000	CAPTIVATING	3y d e	2.18.23	42
+22.06.2026	Elazığ	2	2 Yaşlı İngilizler	ŞARTLI 2 /Dişi		1200	Kum	60	KANEKO - MISS ECEM	215.000	VICTORY XECE	2y d d	1.18.81	36
+22.06.2026	Elazığ	3	3 ve Yukarı İngilizler	Handikap 16 /Dişi /H3		1500	Kum	63	MYBOYCHARLIE (IRE) - BEYAZ GÖLGE	440.000	SKYDIVE	5y d k	1.39.34	61
+22.06.2026	Elazığ	4	3 Yaşlı İngilizler	Maiden		1500	Kum	58	BLUEGRASS CAT (USA) - FLAX FLOWER (USA)	395.000	BLUE RANSOM	3y a e	1.40.67	26
+22.06.2026	Elazığ	5	4 Yaşlı Araplar	Handikap 14 /H3		1200	Kum	59,5	ORÇUN - GÜHERKIZ	280.000	İREM HATUN	4y a k	1.28.10	42
+22.06.2026	Elazığ	6	4 ve Yukarı Araplar	Handikap 13 /H3		1500	Kum	63	SERHANTAY - ALANZA	210.000	ROYALCAN	4y k a	1.55.09	35
+22.06.2026	Elazığ	7	4 ve Yukarı Araplar	ŞARTLI 4		2000	Kum	56	KARA YAĞIZ - BURGAZLIM	350.000	TAŞTEPE	7y a a	2.36.43	75
+22.06.2026	Elazığ	8	3 Yaşlı İngilizler	Maiden		1500	Kum	60	TIZWAY (USA) - ELLA	395.000	KING BOREAS	3y d e	1.43.50	24
+21.06.2026	İstanbul	1	3 Yaşlı Araplar	Maiden		1400	Çim	57	ANKA - BETÜL	600.000	UZBOYLU	3y k e	1.34.18	16
+21.06.2026	İstanbul	2	3 Yaşlı İngilizler	Handikap 14 /H2		2100	Çim	54	HAKEEM (USA) - INVINCIBLE LION	470.000	KING OF TIME	3y d e	2.12.35	32
+21.06.2026	İstanbul	3	2 Yaşlı İngilizler	ŞARTLI 5		1200	Çim	58	MENDIP (USA) - UMNEEYATEE (AUS)	730.000	BELLEZA	2y d d	1.12.12	61
+21.06.2026	İstanbul	4	3 Yaşlı Araplar	Maiden		1400	Çim	55	ORHUNKAAN - ÖZBEYİNGÜLÜ	600.000	ÖZBEYİN RÜZGARI	3y a d	1.33.81	
+21.06.2026	İstanbul	5	4 ve Yukarı Araplar	Handikap 17 /H1		1600	Çim	52	GÜRSU - SİCİLYALI	795.000	GÜRCEYHUN	4y k a	1.45.32	61
+21.06.2026	İstanbul	6	3 ve Yukarı İngilizler	Handikap 15 /H1		1300	Çim	55,5	LUXOR - ISKRA (GB)	595.000	CRAZYBLOOD	4y d a	1.16.31	50
+21.06.2026	İstanbul	7	4 ve Yukarı Araplar	ŞARTLI 5 /Dişi	Yamak-2	2000	Sentetik	55,5	ÖZGÜNHAN - NECİBE	730.000	ULU BEDEN	4y a k	2.20.14	53
+21.06.2026	İstanbul	8	3 ve Yukarı İngilizler	KV-9		1400	Çim	58	TOROK (IRE) - BELLA MIA	1.325.000	BELLO BOY	6y d a	1.23.50	90
+21.06.2026	İstanbul	9	4 Yaşlı Araplar	KV-6		1600	Çim	58	SEMEND - KAFKASGÜLÜ	835.000	SEMENDHAN	4y a a	1.45.24	79
+21.06.2026	İstanbul	10	3 Yaşlı Araplar	Maiden		1400	Çim	57	ALTINCI HİS - SULTAN ERVA	600.000	AYDİNÇ	3y d e	1.33.44	
+21.06.2026	İstanbul	10	3 Yaşlı Araplar	Maiden		1400	Çim	57	ALTINCI HİS - LEYLAK DALI	600.000	ERÇETİN	3y a e	1.33.44	30
+21.06.2026	İzmir	1	3 Yaşlı Araplar	Maiden /Dişi		1200	Kum	53	OĞUZBOYLU - KUDRET NARI	545.000	KONÇİÇEK	3y k d	1.24.54	24
+21.06.2026	İzmir	2	2 Yaşlı İngilizler	ŞARTLI 4		1200	Kum	59	SATONO ARES (JPN) - SNOW HOUND	490.000	SIRIUS MI	2y d e	1.14.32	52
+21.06.2026	İzmir	3	3 ve Yukarı İngilizler	Handikap 16 /H2	Yamak-1	1600	Kum	57,5	AVERY ISLAND (USA) - WINE TIME	630.000	ATOMİC FORCE	4y d a	1.42.34	56
+21.06.2026	İzmir	4	3 Yaşlı Araplar	Maiden /Dişi		1200	Kum	60	GELİBOLU - ELDANS	545.000	VAHŞİ KRALİÇE	3y a d	1.23.38	35
+21.06.2026	İzmir	5	4 ve Yukarı Araplar	ŞARTLI 4		2200	Kum	54	GÜRGÖKÇE - NAKİYE	490.000	DEMİR NİHAT	8y a a	2.38.21	91
+21.06.2026	İzmir	6	3 ve Yukarı İngilizler	ŞARTLI 4		2000	Kum	59	LION HEART (USA) - OLGO	490.000	RED STORM	4y a a	2.09.29	86
+21.06.2026	İzmir	7	3 Yaşlı Araplar	Maiden /Dişi		1200	Kum	58	SAADIN GÜCÜ - BİLGEŞAH	545.000	İLDA SULTAN	3y d d	1.25.29	31
+21.06.2026	İzmir	8	3 Yaşlı İngilizler	ŞARTLI 4		1200	Kum	60	CEMCEM - MY POEM	490.000	VİTE VİTE	3y d e	1.13.96	59
+20.06.2026	Ankara	1	3 Yaşlı Araplar	ŞARTLI 1 /Dişi		1200	Çim	57	AFRİKAANDER - TUMBUL FUNDA	835.000	KÜÇÜK NAİME	3y k d	1.21.37	
+20.06.2026	Ankara	2	3 ve Yukarı İngilizler	SATIŞ 2		1500	Kum	60	AIR VICE MARSHAL (USA) - INFAMOUS (IRE)	560.000	TALE OF THE DREAM	5y d a	1.34.32	91
+20.06.2026	Ankara	3	4 Yaşlı Araplar	ŞARTLI 4		1500	Kum	61	DİLİRAN - AZERİN	595.000	AZER IN MY HEART	4y a a	1.43.44	84
+20.06.2026	Ankara	4	2 Yaşlı İngilizler	ŞARTLI 4		1200	Kum	57	HAKEEM (USA) - TURUVALI HELEN	595.000	ANATOLIAN HERO	2y d e	1.14.39	47
+20.06.2026	Ankara	5	4 ve Yukarı Araplar	ŞARTLI 5 /Dişi		1600	Çim	52	TURBO - ARYELE	730.000	BENİM SULTANIM	5y k k	1.46.11	83
+20.06.2026	Ankara	6	3 Yaşlı Araplar	ŞARTLI 1 /Dişi		1200	Çim	57	BAYHAN - ÇELENK	835.000	SAYRA	3y a d	1.19.49	
+20.06.2026	Ankara	7	4 ve Yukarı Araplar	Kısa Vade Handikap 22 /H1		2100	Kum	53	SERHANTAY - İDAL SULTAN	975.000	SİDAR BEY	5y k a	2.29.84	82
+20.06.2026	Ankara	8	4 Yaşlı Araplar	Handikap 15 /H2	Yamak-1	1600	Çim	57,5	BİÇER - ATİFEHANIM	595.000	SOĞUKDAĞ	4y d a	1.46.68	52
+20.06.2026	Ankara	9	3 Yaşlı Araplar	ŞARTLI 1 /Dişi		1200	Çim	57	AFRİKAANDER - BİR SAYFA	835.000	ALSAYFA	3y a d	1.20.20	
+20.06.2026	Ankara	10	3 Yaşlı İngilizler	Handikap 15 /Dişi /H2		1900	Çim	55	WALDGEIST (GB) - MIDNIGHT MYSTIC (GB)	595.000	MAFDET	3y d d	1.55.60	46
+20.06.2026	Diyarbakır	1	2 Yaşlı İngilizler	ŞARTLI 19		1200	Kum	55,5	SMART ROBIN (JPN) - LADY NINJA	395.000	ÇELİK STAR	2y d e	1.23.52	20
+20.06.2026	Diyarbakır	2	3 ve Yukarı İngilizler	Handikap 16 /H3		1800	Kum	60	MENDIP (USA) - ALLURE D'AMOUR (IRE)	440.000	TYRAXES	4y d a	2.07.63	58
+20.06.2026	Diyarbakır	3	3 Yaşlı İngilizler	ŞARTLI 2		1200	Kum	57	AUTHORIZED (IRE) - INVINCIBLE ROCK	215.000	SEEK AND DESTROY	3y d e	1.19.82	45
+20.06.2026	Diyarbakır	4	3 ve Yukarı İngilizler	ŞARTLI 3 /Dişi		1200	Kum	57	RUN AWAY AND HIDE (USA) - MACADAMIA	280.000	GÜLHA	4y d k	1.18.58	71
+20.06.2026	Diyarbakır	5	3 Yaşlı Araplar	ŞARTLI 2 /Dişi		1200	Kum	56	BALALAYKA - TUMBUL ZEMZEM	215.000	EYLÜL GÜZELİ	3y a d	1.31.63	32
+20.06.2026	Diyarbakır	6	4 ve Yukarı Araplar	ŞARTLI 4		1200	Kum	55	BERKCAN - TOŞURKIZI	350.000	PRENSES DİLARA	6y k k	1.27.77	72
+20.06.2026	İzmir	1	4 ve Yukarı Araplar	ŞARTLI 5	Yamak-2	1900	Kum	58	ALTAHA - SEVDAMSIN CAN	630.000	SAĞLAMCAN	6y a a	2.14.77	94
+20.06.2026	İzmir	2	2 Yaşlı İngilizler	Maiden		1100	Kum	57	SUPER ALP (USA) - BABBAR PATERA	545.000	RULER MAN	2y d e	1.10.02	30
+20.06.2026	İzmir	3	3 Yaşlı Araplar	ŞARTLI 3 /Dişi		1200	Kum	56	BERKSOY - KIZIMDERYA	400.000	ALTIN DERYA	3y a d	1.24.65	41
+20.06.2026	İzmir	4	3 ve Yukarı İngilizler	Handikap 14 /H2		1400	Kum	58	ÇAKAL CARLOS - CRAFTY ANGEL (USA)	400.000	ANGEL ON THE RIGHT	4y d a	1.28.00	43
+20.06.2026	İzmir	5	2 Yaşlı İngilizler	Maiden		1100	Kum	53	TRAPPE SHOT (USA) - VAPOUR MUSING (GB)	545.000	MY LITTLE BOY	2y a e	1.09.66	
+20.06.2026	İzmir	6	3 Yaşlı İngilizler	KV-6		1900	Kum	58	MENDIP (USA) - İZMİR İNCİSİ	695.000	ÖNDERBEYİM	3y d e	2.02.70	65
+20.06.2026	İzmir	7	3 ve Yukarı İngilizler	ŞARTLI 5		1600	Kum	56	NATIVE KHAN (FR) - PLEINE FORME (USA)	630.000	THE ADMIRAL	4y k a	1.41.15	85
+20.06.2026	İzmir	8	3 Yaşlı İngilizler	Handikap 15 /H2		1900	Kum	56,5	CRIMEAN TATAR - MARILU (GER)	490.000	ZENITH SKY	3y d d	2.04.50	42
+20.06.2026	İzmir	9	4 ve Yukarı Araplar	Handikap 15 /Dişi /H2		1400	Kum	56	PİRSUS - KOŞANSAÇAN	490.000	SOSAN YILDIZI	4y a k	1.37.70	52
+19.06.2026	Bursa	1	3 Yaşlı İngilizler	ŞARTLI 3		1800	Çim	52	VICTOIRE PISA (JPN) - HONEY RYDER	400.000	VERMITHOR	3y d e	1.48.18	51
+19.06.2026	Bursa	2	2 Yaşlı İngilizler	Maiden		1200	Çim	55	NATIVE KHAN (FR) - SHERMAN OAKS	545.000	PONCA	2y a d	1.12.60	
+19.06.2026	Bursa	3	2 Yaşlı İngilizler	Maiden		1200	Çim	55	RUN AWAY AND HIDE (USA) - OH JOY	545.000	SECRET JOY	2y d d	1.11.85	
+19.06.2026	Bursa	4	3 Yaşlı İngilizler	Handikap 14 /Dişi /H2		1300	Çim	57	SUPER SAVER (USA) - MARVEL	400.000	MY CHAKRA	3y d d	1.17.46	45
+19.06.2026	Bursa	5	3 Yaşlı Araplar	ŞARTLI 4		1300	Çim	51	YAKUPBEY - NEŞENAZ	490.000	ŞARK AYAZI	3y a e	1.24.49	41
+19.06.2026	Bursa	6	3 ve Yukarı İngilizler	KV-7		1500	Çim	54	SCARFACE - REYAREYA	835.000	ROSSO E BIANCO	5y d k	1.28.04	90
+19.06.2026	Bursa	7	4 Yaşlı Araplar	KV-8		2000	Kum	58	ORÇUN - TEMAŞA	975.000	ŞİMŞEKKIRAN	4y k a	2.22.17	85
+19.06.2026	Bursa	8	3 ve Yukarı İngilizler	ŞARTLI 4 /Dişi	Yamak-2	2000	Çim	60	BALLIKAYA - YAKITORI	490.000	MARION	4y a k	2.02.40	78
+19.06.2026	Bursa	9	4 ve Yukarı Araplar	Handikap 17 /H2		1300	Çim	58,5	GELİBOLU - ASTURBO	680.000	HIZLI KEREM	4y k a	1.24.33	76
+19.06.2026	İstanbul	1	3 ve Yukarı İngilizler	Handikap 15 /H1		2100	Sentetik	60	MYBOYCHARLIE (IRE) - ZİMBAT	595.000	START UP	4y d a	2.15.33	57
+19.06.2026	İstanbul	2	3 Yaşlı İngilizler	SATIŞ 2		1600	Çim	53	BUSHRANGER (IRE) - BALAHATUN	560.000	HIZKESEN	3y d d	1.37.27	34
+19.06.2026	İstanbul	3	3 Yaşlı İngilizler	ŞARTLI 5		1100	Çim	54	TOROK (IRE) - ANGEL OF WESTPORT	730.000	HİDAN	3y d e	1.04.69	50
+19.06.2026	İstanbul	4	4 Yaşlı Araplar	Handikap 15 /H2		1900	Çim	57,5	GELİBOLU - MANİTA	595.000	DENİZ SAVAŞI	4y a a	2.07.93	47
+19.06.2026	İstanbul	5	2 Yaşlı İngilizler	Maiden		1200	Çim	57	AUTHORIZED (IRE) - MAGIKA (GB)	600.000	PYROHAN	2y d e	1.12.40	
+19.06.2026	İstanbul	6	3 ve Yukarı İngilizler	KV-7 /Dişi		2000	Sentetik	56	VINO ROSSO (USA) - SOUL KITCHEN (USA)	975.000	VISENYA	4y d k	2.06.59	91
+19.06.2026	İstanbul	7	3 Yaşlı Araplar	ŞARTLI 4		1400	Çim	57	GELİBOLU - UÇAN ŞİMŞEK	595.000	MY EAGLE	3y a e	1.32.23	45
+19.06.2026	İstanbul	8	4 ve Yukarı Araplar	ŞARTLI 3		1400	Çim	56,5	MADRABAZ - ABAKAY	470.000	ELLİYEDİ	5y k a	1.31.49	79`;
+
+
+// UZMAN KURAL KİTABI (Word dosyasından otomatik ayrıştırıldı, 181 koşu-bloğu)
+const rulesData = [{"key": "2 yaşlı ingilizler ŞARTLI 1", "text": "ÇİM= GENEL PUANI YÜKSEK 2 AT ARASINDA BİTER Favori kazanır. DİŞİDE FOVORİ VE PLASELER | KUM=GENELDE FOVORİLER KAZANIR  % 30 SÜPRİZ BİTER Sürdirek Favori gelir. | GENELDE FOVORİ PLASELER ORJİN VE KARDEŞLERİ Yarış hayatına yeni başlayacak taylardan 1-2 atlar daha şanslı 52 kg lının ve numara ve kulvarının toplam numarasını yaz süprizlere dikkat"}, {"key": "2 yaşlı ingilizler ŞARTLI 2", "text": "ÇİM= KESİN FOVORİ VARSA KAZANIIR YOKSA SÜPRİZ BİTER Favori varsa kazanır. Yoksa sürpriz. | KUM= AMERİKADAN GELEN KUMCU AYGIRLARIN YAVRULARI KAZANMAYA EN YAKINDIR               Sürdirek ithal tay kazanır. Eğer yoksa Süpriz. FOVORİ GENELDE KAZANIR ORJİN FAZLASI KİMSE O KAZANIR İTHAL AYGIRLARIN | 1 YOKSA ÇOK SÜPRİZ"}, {"key": "2 yaşlı ingilizler ŞARTLI 3", "text": "ÇİM= GENEL PUANA GÖRE İLK 3 TAY % 85 KAZANIR % 15 SÜPRİZ BİTER Türkiye puanına göre 1.2.3.4. atlar fotomaç ilk 4 at içerisinde | KUM=FOVORİ PLASELER ARASINDA BİTER Türkiye puanına göre 1. 2. 3 atların dışına çıkmaz. | 1,2,3 HANDİKAPLAR ARASINDA 48,49 HANDİKAPLAR BOMBA 1-2 atların dışına çıkmaz"}, {"key": "2 yaşlı ingilizler ŞARTLI 4", "text": "ÇİM= FAVORİ PLASELER ARASINDA BİTER Favori şanslıdır.YÜKSK....1,2...HANDİKAPLI..KAZANIR | KUM=FOVORİ VE HANDİKAPI YÜKSEK AT ARASINDA GEÇER | 1Çİ VARSA GELİR YOKSA 56KG BOMBASI 1-2 atın dışına çıkmaz genelde fovari kazanır"}, {"key": "2 yaşlı ingilizler ŞARTLI 5", "text": "ÇİM=FOVORİ YOKSA BOMBA PATLAR   45,52,53,54,55 ,56..HANDİKAPLAR BOMBAYI PATLATIR YOKSA TGP 1 AT KAZANIR Favori kazanır. | KUM=HANDİKAP PUANI VE GENEL BÜLTEN PUANI 2 AT ARASINDA BİTER Türkiye puanına göre 1. ve 2 atlar kazanır | HANDİKAP VE GENEL PUAN ARASINDA YÜKSEKSE GELİR DEGİLSE 45,52,53,54,55 ,56..HANDİKAPLAR BOMBA 1-2 atların dışına çıkmaz"}, {"key": "2 yaşlı ingilizler ŞARTLI 11", "text": "ÇİM= FOVORİ PLASELER ŞANSLIDIR | KUM=İLK 3 ATIN DIŞINA ÇIKMAZ | 3 ATIN DIŞINA CIKMAZ HANDİKAP"}, {"key": "2 yaşlı ingilizler KV 6", "text": "ÇİM=GENEL PUANDA İLK 3 AT % 85 KAZANIR % 15 50 KG CİVARI TAYLAR KAZANIR Türkiye puanına göre 1.2.3 atlar gelir.1Çİ HANDİKAP VE STARTI 4,5,OLANLAR HEP KAZANMIŞ VE 5 NUMARALI AT 1 DEN ÇIKARSA YAZILABİLİR YADA 1   5  TEN ÇIKARSA DİŞİDE HANDİKAP 1 | KUM= PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ Türkiye puanına göre 1. 2. 3 atlar kazanır. | GENEL PUANDA 3 AT ARASINDA YAŞLARI YÜKSEK    %15  50 KG HAFİF  1-2 dışına çıkmaz"}, {"key": "2 yaşlı ingilizler KV 7", "text": "ÇİM= BAŞTAN.1,2,,,SONDAN..1,2..BÜLTN..PUANI..BYGİR.COM | KUM= PLASELERE DİKKAT FOVORİNİN ŞANSI AZ  Türkiye puanına göre 2. 3 atlar özellikle ithal taylar | ŞARTLI 5TE 2 Çİ OLAN AT ÇOK ŞANSLI PLASELER FAZLA KAZANIYOR 1-2 atların dışına çıkmaz yada hafif kg süpriz bitme ihtimalide var"}, {"key": "2 yaşlı ingilizler KV 8", "text": "ÇİM= 1,2 TAYLAR DIŞINA ÇIKMAZ Favori kazanır. | KUM=FOVORİ VARSA KAZANIR YOKSA SÜPRİZ BİTER Türkiye puanına göre 1.2.3 atlar gelir. | 1,2,3HANDİKAPLARFOVORİ VARSA KAZANIR Fovari 1-2 atlar çok şanslı dışına çıkmaz ama 5-6 lira ganyanlı atlara dikkat o kadar süpriz gelmez"}, {"key": "2 yaşlı ingilizler KV 9", "text": "ÇİM=SÜPRİZ BİTER PLASELERİN ŞANSI %50 | KUM= SÜPRİZ İHTİMALİ %70 % 30 PLASE TAYLAR KAZANIR Süpriz olur. İkilisi bile süpriz yapar | SÜPRİZ İHTİMALİ YÜKSEK %30PLASE KAZANIR 1-2-3 atların dışına çıkmaz fovari banko ise tek atın geçilmez"}, {"key": "2 yaşlı ingilizler HANDİKAP 13", "text": "ÇİM=MUTLAKA HAFİF KİLOLU SÜPRİZ AT GELİR | KUM=KESİN SÜPRİZ OLUR BOMBALAR PATLAR BOMBA | KESİN SÜPRİZ OLUR BOMBALAR PATLAR"}, {"key": "2 yaşlı ingilizler HANDİKAP 14", "text": "ÇİM=% 50 SÜPRİZ % 50 İLK 2 AT ARASINDA BİTER Sürpriz biter. | KUM= GENEL VE HANDİKAP 4 AT İÇERİSİNDE Türkiye puanına göre 2.3.4 at kazanır.45,,52,53,54,55,56,,58....1200..KUM,,,,hand,kaplılar...kazanır | GENEL VE HANDİKAP 4 AT İÇERİSİNDE"}, {"key": "2 yaşlı ingilizler HANDİKAP 15", "text": "ÇİM=50-54 KG ARASINDAKİ YOKSA SÜPRİZ BİTER 1,2 STARLILAR VEYA DİŞİ VE ERKEK FAZLALIĞINA GÖRE AĞIRLIK NEYSE HANDİKAP YÜKSEK AT YAZINIZ Favori kazanır. | KUM=54 KG TAŞIYAN ATLAR VE ALT KG LAR % 85 KAZANIR Sürdirek Favori kazanır. | 1,2,HANDİKAPLAR 54,56,KG LI ATLAR 47 HANDİKAPLISI BOMBA 1-2-3 atların dışına çıkmaz ama %20 hafif kg süprizde bitebilir dikkat"}, {"key": "2 yaşlı ingilizler HANDİKAP 16", "text": "ÇİM=7,8,9,10 NUMARALI ATLAR DEVAMLI SÜPRİZ BİTER Türkiye puanına göre 1.2.3. atların dışına çıkmaz. | KUM= 7,8,9 NUMARALI TAYLAR GENELDE KAZANIR Türkiye puanına göre 1.2.3.4 atlar kazanır | 1,2,3 HANDİKAPLAR VE 7,8,9NOLAR KAZANIR"}, {"key": "2 yaşlı ingilizler HANDİKAP 17", "text": "ÇİM=48 – 54 KG TAŞIYAN TAYLAR KAZANIR , SÜPRİZ PATLAR 1,2 STARLISI VE ERKEK VE DİŞİ AĞIRLIKLI OLARAK BAKINIZ VE HANDİKAP TA AĞIRLIK BASAN GELİR Türkiye puanına göre 1.2.3. atların dışına çıkmaz. | KUM= EN ALT BİRİ KAZANIR EN ÜSTTEKİ İKİLİ YAPAR Türkiye puanına göre 1.2.3.4 atlar kazanır | EN ALTTAKİ TAYLAR ÇOK ŞANSLI HANDİKAP YÜKSEK ATLAR İKİLİYE GİRER"}, {"key": "2 yaşlı ingilizler AÇIK GR1", "text": "ÇİM= FOVORİ VE PLASELERİN DIŞINA ÇIKMAZ | KUM= FOVORİ VARSA KAZNIR YOKSA SÜPRİZ BİTER | FOVORİ VARSA KAZANIR YOKSA SÜPRİZ BİTER 1 ve 2 atların dışına çıkmaz"}, {"key": "2 yaşlı ingilizler AÇIK GR 2", "text": "ÇİM= FOVORİ VE PLASELERİN DIŞINA ÇIKMAZ Türkiye puanına göre 1.2.3. atların dışına çıkmaz. | KUM= FOVORİ VARSA KAZNIR YOKSA SÜPRİZ BİTER"}, {"key": "2 yaşlı ingilizler AÇIK GR 3", "text": "ÇİM= FOVORİ VE PLASELERİN DIŞINA ÇIKMAZ Türkiye puanına göre 1.2.3. atların dışına çıkmaz. | KUM= FOVORİ VARSA KAZNIR YOKSA SÜPRİZ BİTER Türkiye puanına göre 1.2.3.4. atlar şanslıdır."}, {"key": "3 YAŞ İNGİLİZLER MAİDEN", "text": "ÇİM= YERLİ AYGIRLARIMIZIN YAVRULARI ÇOK ŞANSLIDIR Favori kazanır. | KUM= GENELDE FOVORİ KAZANIR handikap yüksek at gelir  Favori ithal tay kazanır. Yoksa Türkiye puanına göre 1.2. at | GENELDE FOVARİ KAZANIR Her ihtimale açık bir koşu\n\n\n\n\nİNGİLİZLER\n2-3 Yaş İngilizler\nŞartlı – 1———-: Genelde favoriler gelir..\nKUM—————-: Sürpriz ihtimali yüksek..\nŞartlı – 2———-: Kısa ve orta mesafelerde favori Uzunlarda sürpriz\nKUM—————-: Favori varsa kazanır.(T.puanında 190 ı geçmişse) Eğer yoksa 55 kg civarı Süpriz\nŞartlı – 3———-: Normal çimde 1.2.atlar Ağır çimde sürpriz.\nKUM—————-: Favori varsa kazanır. Eğer yoksa 60 kg civarı süpriz.\nŞartlı – 4———-: Favori\nKUM—————: Favori\nŞartlı – 5 ———: Favorinin şansı az, plase ve sürpriz biter.\nKUM—————: Favori varsa kazanır Eğer yoksa hafif kilolu 2.3.4.5 .atlar kazanır\nKV-6 —————: Genelde favoriler arasında geçer.\nKUM—————-: Sürpriz ihtimali yüksek.\nKV-7 —————: Uzunda ağır kilo favori kısada sürpriz\nKUM—————-: Favori gelmez, plase ve sürpriz biter.\nKV-8—————-: 1,2,3,4 atlar.\nKUM—————-: Favorinin şansı fazladır.\nKV-21 ————-: İlk 4 at dışına pek çıkmaz.\nKUM—————-: 2.3. atlar\nKV-22 ————-: Sürpriz biter..\nKUM—————-: Sürpriz biter.\nKV-23 ————-:Türkiye puanına göre 1.2.3.4.atlar şanslıdır.\nKUM—————-: Türkiye puanına göre 1.2.3. atlar şanslıdır.\nKV-24 ————-: Uzunda ağır kilolu atlar kısada sürpriz kazanır.\nKUM—————-: Sürpriz\nHandikap 13 —- : Uzun da hafif kilo favori kısada ağır kilo sürpriz.\nHandikap-14—-: Genel istatistiklerde olduğu gibi çoğunlukla 60 kg. altı 1.2. at gelir, 10 yarışın 3 ü sürpriz bitebilir.\nKUM—————-: Hafif kg.li atlar sürpriz yapabilir. Favorinin şansı az.\nHandikap-15—-: Favori ve plaseler arasında geçer.\nKUM—————-: ‘’ ‘’ ‘’ ‘’\nHandikap-16—-: İlk 5 atın şansı vardır.\nKUM—————-: Sürpriz biter.\nHandikap 17—–: Genelde favoriler arasında geçer.\nKUM—————–: Her 10 koşunun 8 i, 3 ncü at ile biter. Maiden Koşular: Araplarda yazılanlar bunlar için de geçerlidir. Açık/ 1,2,3 Koşular: Araplarda yazılanlar bunlar içinde geçerlidir | 3 YAŞ İNGİLİZLER"}, {"key": "3 YAŞ İNGİLİZLER ŞARTLI 1", "text": "ÇİM=İ LK 4 AT ARASINDA BİTER | KUM= FOVORİ PLASELER ARASINDA BİTER | ORTALA.GANYAN...&..DC=AYNI.NUMARALI..AT.KAZANIR"}, {"key": "3 YAŞ İNGİLİZLER ŞARTLI 2", "text": "ÇİM=FOVORİ VARSA KAZANIR YOKSA SÜPRİZ BİTER AT KAZANCI YÜKSEK 2 ATI MUTLAKA YAZINIZ | KUM= FOVORİ ÇOK ŞANSLI YOKSA SÜPRİZ Favori varsa kazanır.(T.puanında 190 ı geçmişse) Eğer yoksa 55 kg civarı Sürpriz | 1,2,3,5 HANDİKAPLAR ARASINDA GEÇER   1-2 handikap dışına çıkmaz bu 2 handikap arasında kalan puanlı fotomaçta ortadaki kalan atı yaz şablonunda"}, {"key": "3 YAŞ İNGİLİZLER ŞARTLI 3", "text": "ÇİM=FOVORİNİN ŞANSI AZ PLSALER DAHA ŞANSLI | KUM= FOVORİ ve 90 pualı ile birlikte  ŞANSLI YOKSA SÜPRİZ FOTOMAÇ VE POSTA 100 PUANLILARI HAFİF KG İSE (   ) Eğer yoksa 60 kg civarı süpriz. ( 70 HANDİKAP LI GELMEZ ) 58 HANDİKAP OLUR DİKKAT (((( 47 İLE 51 HANDİKAPLAR ARASINDA GEÇER SÜPRİZ BİTER DİKKATçok atlarda az atlarda fovori)))   . KULVAR SAYINI UYGULA BOMBA PATLAR | FOVORİ VE SON YARIŞLARINDA İLK MAIDENDE KAZANAN AT ŞANSI YÜKSEK     1 Çİ AYAK VE 4 AYAK OLARAK KOŞUYORSA 1 VE 3,4  NUMARALI ATLAR KAZANIR     DİŞİDE İSE 4 ÇÜ HANDİKAP VE     %65 PLASE ((( % 30 HANDİKABI YÜKSEK ATLAR KAZANIR   ))) 57 KG ÜSTÜNÜ YAZ 1-2 handikapların dışına çıkmaz fovari bankoysa tek atın | ŞARTLI 4 \n\nÇİM\n\n2-3-4 TGP  ATLAR KAZANIR | 1900--çim\nÇİM=50--kg--52-handikaplı-atlar-kazanır\nÇİM=54--kg--55-59-handikaplı-atlar-kazanır\nÇİM=55-kg--68-handikaplı-at-kazanır\nÇİM=56-kg--100-handikaplı-at-kazanır\n\nFOVORİ GELMEZSE  SON KOŞUSUNDA 2 TANE BİRİNÇİLİK OLAN FOVORİ KAZANMAZ SÜPRİZ BİTER YADA SONRAKİ İLK 4 AT DIŞINA ÇIKMAZ FOTOMAÇ 56 kg sa ve aprantiler varsa gelir fovori | KUM=  \n1400--kum\nkum--50--kg-70,,handikap\nkum--53--kg-75,,  ,,,,,\nkum--54--kg-74,,  ,,,,\nkum--55--kg-46--55--71,,handikaplar\nkum--56--kg-85,,\nkum--58--kg-87\n\n1,2,3,4 startlı ATLAR KAZANIR SON YARIŞLARINDA MAIDENDEN ÇIKAN AT DAHA ŞANSLIDIR Favori varsa kazanır. Eğer yoksa 2.3. atlar kazanır....uzunda..dış...kulvarlar...kazanır.......1,6,startlılar....handikap..1.çil..dişi | ((( FOVORİ VE PLASE 2,3,4 NUMARALI ATLAR KAZANIR ))) 44, 45 HANDİKAP. BOMBASI . 1 ,2 KULVARLI ATLAR EN AZ 3 GANYAN İLE(GELİR (((DİŞİLERDE HANDİKAP 1)) fovari gelmeyebilir ağır kg 2-3 atlar şanslı"}, {"key": "3 YAŞ İNGİLİZLER ŞARTLI 5", "text": "ÇİM=FOVORİ ÇOK ŞANSLI % 40 HAFİF KG LAR KAZANIR | KUM=fotomaç  % 90 fotomaç 100 puanlısı % süpriz bombası  49 - 50 51 kg lardan gelir | 1200  KUM 1,8,13 STARTLILAR KAZANIR  DİŞİLERDE HANDİKAP 1 GELİR"}, {"key": "3 YAŞ İNGİLİZLER ŞARTLI 11", "text": "ÇİM=FOVORİ ÇOK ŞANSLI YOKSA PLASE ATLAR KAZANIR | KUM= 1,2,3 ATLAR KAZANIR | 1,2,3 HANDİKAP ARASINDA GEÇER Favori varsa kazanır. Yoksa 2.3.4.atlar gelir Favorinin şansı az 2.3.4.atlar gelir.\n%50 süpriz biter %501-2 atlar şanslı her ihtimale açık bir koşu jokeylere oynayın"}, {"key": "3 YAŞ İNGİLİZLER KV 6", "text": "ÇİM=1,2 ATLAR DIŞINA ÇIKMAZ ÇIKARSA EN HAFİF KG LI AT GELİR TGP 1 AT TEK ATILABİLİR | KUM= 1,2 ATLAR ŞANSLI   Türkiye puanına göre 1.2.3. atlar kazanır. | 1,2,3 HANDİKAPLAR ARASINDA GEÇER | 1-2 atların dışına çıkmaz handikap puanı yüksek olan atlar şanslı | 1,2,3 HANDİKAPLAR ARASINDA GEÇER"}, {"key": "3 YAŞ İNGİLİZLER KV 6 DİŞİ HANDİKAP 1", "text": "ÇİM=FOVORİ ÇOK ŞANSLI hafif kg handikap 1 fovori YOKSA PLASE ATLAR KAZANIR\n\n1600 çim | KUM= 1,2 HANDİKAPLI ATLAR KAZANIR 6 NUMARALI AT KAZANIR 54 KG ))YADA 6 STARTLI VE ALTINI YAZ"}, {"key": "3 YAŞ İNGİLİZLER KV 7 ERKEK", "text": "ÇİM=İLK 2 ATIN DIŞINA ÇIKMAZ | KUM=54kg..50.handikapların.3 çüsü gelir % 20 FOVORİ ŞANSLI % 80 plase ile birlikte  SÜPRİZ BİTER Erkek Süpriz biter. | %20 FOVORİ %80 SÜPRİZ 54 KG SANSI YÜKSEK VE 5 Çİ HANDİKAPLILARA DİKKAT | 1900 çim"}, {"key": "3 YAŞ İNGİLİZLER KV 7 DİŞİ", "text": "ÇİM=FOVORİ ÇOK ŞANSLI YOKSA PLASE ATLAR KAZANIR | KUM= 1,2, ATLAR KAZANIR HANDİKAPLI Dişi 1.2. atlar kazanır. | 6 NOLU AT YADA 6 STARTLI ATLAR 1,2 HANDİKAPLI   genelde fovari 1-2 atların dışına çıkmaz handikap puanı yüksek olan atları yazın"}, {"key": "3 YAŞ İNGİLİZLER KV 8", "text": "ÇİM= 1-2-4 STARTLI FOVORİ PLASE  ATLARI YAZ GEÇ | KUM= FOVORİNİN ŞANSI AZ  (( K8 s ))DE FOVORİ DISINA ÇIKMAZ% 10 1, VE 3 HANDİKAPLAR % 60 % 30 57 KG ALTINDAKİ ATLAR KAZANIR Favori gelmez. Süpriz biter. | ((( 1,2,3 HANDİKAP58 KG )) 57 KG ATIN ASAGI VE YUKARISINDAKİ KENDİ KULVARIN DAN CIKANLARA DİKKAT   1-2 atların dışına çıkmaz handikap puanı yüksek olan atları yazın"}, {"key": "3 YAŞ İNGİLİZLER KV 9", "text": "ÇİM=KESİN SÜRDİREK FOVORİ KAZANIR YOKSA PLASELER DIŞINA ÇIKMAZ | KUM= KESİN FOVORİNİN KANDİKAPI YÜKSEKSE KAZANIR YOKSA 2,3 HANDİKAPLAR | KESİN FOVORİNİN HANDİKABI YÜKSEKSE KAZANIR 1-2-3– atların dışına çıkmaz"}, {"key": "3 YAŞ İNGİLİZLER KV 21", "text": "ÇİM=(( % 60 3,4,5 NUMARALI ATLAR )) (( 6,7,8 NUMARALI ATLAR %30 )) (( %10 1,2 NUMARALAR )) | KUM=(( 3,4,5NUMARALI ATLAR %60 ))) ((( 1,2 NUMARALI %20)) (( 48,49 KG ÇOK SÜPRİZ % 20)) Favori gelmez. 2.3. ve ithal taylara dikkat. | 3,4,5 NUMARALI %60.. 6,7,8 % 30 ..1,2%10 şanslı Fovari gelmez hafif kg 2-3-4 atlar yadayine 48-49 kg süpriz 7-8 liralık"}, {"key": "3 YAŞ İNGİLİZLER KV 22", "text": "ÇİM=% 60 1,2,3 HANDİKAPLAR ))) % 30 4,5 HANDİKAPLAR ))) % 10 ÇOK HAFİFLER 48 VEYA EN HAFİFLER | KUM=((( 1,2,3 %50 NUMARALI ))) ((( 4,5,6% 30 NUMARALI ))) 48 KG VEYA EN HAFİFLER %20 ÇOK SÜPRİZ ))) BOMBA | 1,2,3,%50... 4,5,6.%30 en hafifler %20 şanslı Fovari atlar gelmez 48 kg çok süpriz biter"}, {"key": "3 YAŞ İNGİLİZLER KV 23", "text": "ÇİM=% 70 FOVORİ KAZANIR % 30 PLASELER KAZANIR | KUM= GENELDE FOVORİ SÜRDİREK % 60 FOVORİ YOKSA % 40 SÜPRİZ BİTER Türkiye puanına göre 1.2.3. atlar şanslıdır | genelde fovari %60 %40süpriz"}, {"key": "3 YAŞ İNGİLİZLER KV 24", "text": "ÇİM=HANDİKAP PUANI 100 VE ÜSTÜNDEKİ ATLAR ÇOK ŞANSLI% 80 (( % 20 2,7,8,9 NUMARALI ATLAR | KUM=90 İLA 120 VE ARASINDAKİ PUANLILAR % 80   % 20 88 PUANLILAR   2.3.atların şansı daha fazladır. | 90-120 puanlılar %80 88 puanlı %20"}, {"key": "3 YAŞ İNGİLİZLER KV 25", "text": "ÇİM=2,3,4,5 NUMARALI ATLAR ÇOK ŞANSLI % 75 ((( % 25 6,7,8,9 NUMARALI ATLAR | KUM=3,4,5 NUMARALI % 60   % 20 1,2 NUMARALI % 20 45- 70 HANDİKAP VEYA PUANLI ATLAR    Süpriz biter | 3.4.5handikap %60 1,2%20 45-70 arası %30 şanslı"}, {"key": "3 YAŞ İNGİLİZLER KV 26", "text": "ÇİM=3 YAŞLILAR % 90 | KUM=   3 yaşlılar %70 2 yaşlılar %30 şanslıdır %70 Favori kazanır %30 2.3.4 atlar kazanır."}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 13", "text": "ÇİM=İLK 3 AT ÇOK ŞANSLI EN HAFİF KG LILAR ŞANSI YOK HANDİKAPI 37,41,43,47,48,50 VE 13 NUMARALI VE STARTI 2 OLAN AT KAZANIR | KUM= 1,2,3,4 % 70   % 20 8    % 10 30,,35 PUANLI ATLAR | handikap 1,2,3 %70 .. 8 ...%20...30,35,47 handikaplar %10 Fovari belirgin ise kazanma şansı çok yüksek hafif 54 kg süprizlere dikkat"}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 14", "text": "ÇİM=ALTTAKİ ATLAR GELİR    EN ÜSTTEKİ 2 ATIN SANSI % 20 DİR (( 7,8,9 )) HANDİKAP SIRASINDAKİ ATLARIN GELİRİ YÜKSEKTİR (( DİŞİDE 85 PUANLI ATIN KULVARINA BAK 1 Çİ ONUN ALT VE ÜST KULVARINDAKİ YÜKSEK KULVARI TEK AT  HAFİF KG VE HANDİKAPI YÜKSEK AT GELİR52KG.45,49,53..HANDİKAPLI  KAZANIR  GENELLİKLEkarışıkta 85 puana bak üstündeki kulvarın ve altındaki kulvarlının üstünü yüksek olanın 2 rakam ekle ve ekle yüksek kulvarlısı tek at | KUM=2 Çİ AT SR 1800 \nGENELDE SÜPRİZ BİTER 37-,43,47-48-49-51-52 HANDİKAPLAR FAZLA KAZANIYOR 60 kg ın altındaki 1.2.atlar. Dişilerde Türkiye puanına göre 3.at ın şansı fazladır.\n\n1 Çİ AT SIRALAMADA 1300 KUM | genelde sürpriz 37,43,47, 48,49,51,52 handikaplar ((( dişilerde 58,5 kg 1,2,3 hanikaplı 3 tane buçuklu varsa fovori ))) | %75 1-2-3 atlara güvenin yada hafif kg 5-6 lira ganyanlı atlara dikkat | 1900 kum | 1500 kum"}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 15", "text": "ÇİM=5,6,8,9,10 NUMARALI ATLAR ÇOK ŞANSLIDIR % 20 EN ALTTAKİ ATLARDAN BİR AT GELİR | KUM= FOVORİ AĞIR KG SA 54 KG KAZANIR 1,2,3 HANDİKAPLAR FAZLA KAZANIR..ORTALAMA.GANYAN..1.,,,..5..Çİ.AT   Türkiye puanına göre 1.2.3. atlar gelir. 40,41,42,44,46,48,49,51,52,55,57,58,59,61,62,64,66,67,68,69,75 HANDİKAPLAR KAZANABİLİR DİŞİ KOŞAN 1 TANE AT VARSA KAZANABİLİR 54 KG LILR FAZLA KAZANIYOR DİKKAT | DİŞİLERDE HANDİKAP 1 ,4..çü..KAZANIR...100,90..puanlı...fotomaç | fovori şanslı ağır56 kg sa 51,54,55,5, 60 kg... 1, 2,3,4handikaplı kazanır ..\nHer ihtimale açık bir koşu 1-2-3 atlar yada hafif kg süpriz fovari atlara güvenmeyin"}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 16", "text": "ÇİM=FOVORİ PLASELER ARASINDA BİTER % 30 7,8,9 NUMARALAR ARASINDA BİTER SİSTEM 1 NUMARA PUAN 2 | KUM= 1,2,3 % 80 %20  51.... İLE....56...KG...LAR..ARASINDAKİ...62...HANDİKAPLISI...PLASE..AT..KAZANIR 40-48-49-50- 52 -53 -54 GENELDE BU HANDİKAPLARDAN SÜPRİZ GELİR | 1,2,3,4 %80 handikap 40-43-48-49-50-51-54 %20 handikaplı Fovari ve 2 at kazanır altta olsada kazanma şansı daha yüksek ama hafif kg atlara dikkat"}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 17", "text": "ÇİM=HAFİF KG LI ATLAR ÇOK ŞANSLI % 25 SÜPRİZ BİTER | KUM= GENELDE PLASE ATLAR ŞANSLI % 70 SÜPRİZ BİTER   Türkiye puanına göre 1.2.3.4. atlar şanslı. | 1-2-3 yada hafif kg süpriz biter normal şartlarda 1-2 dışına çıkmaz"}, {"key": "3 YAŞ İNGİLİZLER HANDİKAP 18", "text": "ÇİM= | KUM= | HANDİKAP PUANI 55 VE 56 ATLAR GELİR | AÇIK GR 1"}, {"key": "3 YAŞ İNGİLİZLER Gr 1 dişi çim sürpriz biter orjinli kuvettli at gelir dikkat et", "text": "ÇİM=FOVORİ PLASE DIŞINA ÇIKMAZ | KUM= FOVORİ VARSA SÜRDİREK KAZANIR YADA SÜPRİZ BİTER %70 Favori %30 Süpriz | genel olarak fovori yıkılırsa 58 kg Genelde 1-2-3– atlar kazanır ama yinade koşunun durumuna göre fazla at yazmakta fayda var"}, {"key": "3 YAŞ İNGİLİZLER AÇIK GR 2", "text": "ÇİM= | KUM="}, {"key": "3 YAŞ İNGİLİZLER AÇIK GR 3", "text": "ÇİM=handikap 3 at kazanır sürpriz biter puansız at kazanır 70 puanlı gazate puanı | KUM= %70 Favori plaseler  %30 Sürpriz 70 puanlısı kazanır  2 Çİ  AT SIRALAMADA 1600 KUM | SATIŞ.KOŞULARI\n\nHANDİKAP..1..2.3.VE (TUR ) ATLAR KAZANIR"}, {"key": "3 ve yukarı ingilizler şartlı 3 MAİDEN", "text": "ÇİM=YERLİ AYGIRLARIMIZIN YAVRULARI ÇOK ŞANSLIDIR DİŞİLERDE HANDİKAP 1,2 KAZANIR ((( 1700 DE 58 KG LI FOVORİ HANDİKAPI YÜKSEK AT FAZLA GELİYOR ))) | KUM= GENELDE FOVORİ KAZANIR 1 AYAK VE SON AYAKTA İSE % 100...GANYAN...ORTALAMA..3.Çü.ATdişi | HANDİKAP.%.2.Çİ.AT.NORMAL..KOŞUDA\n\n T GENELİ 3 ÇÜ AT 1200 KUM \n1 Çİ AT SIRALAMADA 1300 KUM DİŞİ \n2 Çİ AT SR  1200 DİŞİ\n1 Çİ AT SR 1500 DİŞİ | FOVORİ KAZANIR BU YARIŞ ÖZELLİKLERİNE GÖRE BAKILABİLİR GENELDE SÜPRİZ SONUÇLANIR ((( 2 TANE 58 KG VARSA 2 KG DAN BİRİ KAZANIYOR FOVORİ GELMİYOR)) | genelde fovori VE DİŞİLERDE  handikap 1,2 KUM1600 DE DİŞİLERDE FORM PUANI 1,2AT DIŞINA ÇIKMAZ   1,8,numaralar | 3 YAŞLI İNGİLİZLER. | Şartlı1.genel puanı yüksek ilk 3 attan biri gelir. | Şartlı2:varsa srd. Yoksa 55kg at.yıl-0-top-3-kilo 53 | Şartlı3:varsa srd yoksa 60 kg at. | Şartlı4:favori gelir.yıl-2.top-2. | Şartlı5.öne çıkan fvr.yoksa234at. | Hand 14:1-2 at kazanır.60 kg az. | Hand 15:1.2.3. at dışına çıkmaz.han-3.at tek | Hand 16:hafif kilo favori. | Hand 17:hafif kilo favori: | Kuvvetli grupta 1.2.3 taylar zayıf grpt a hafif atlar. | Kv6:1.2 atlar. | Kv7:diş favori erk spriz.yıl ve top 2-3-at | Kv8:57 kg az favori-.performansı 1.at | Kv21:spriz biter. | Kv22.favori atlar 1.2 | Maiden:ilk iki at arasında | Açık: favori atlar. | 3 ve yukarı ingilizler şartlı 2\nÇİM=GENELDE SÜPRİZ BİTER % 30PLASELER KAZANIR\nKUM= GENELDE SÜPRİZ BİTER FOVORİNİN ŞANSI AZ\nHer ihtimale açık bir koşu çok at yazın 57 kg süpriz atlara dikkat %60 1-2-3 %40 süpriz biter | 3 ve yukarı ingilizler şartlı 3 | ÇİM DİŞİ =HANDİKAP 1 FOVORİ KAZANIR ENFAZLA 1 ,2 HANDİKAPLILAR\nÇİM= AĞIR KG 1,2,3 NUMARALI ATLAR NOLU % 20 7,8 NUMARALI ATLAR KAZANIR\nKUM= FOVORİ PLASE ATLAR ARASINDA GEÇER bombası handikapı 2 at kalitelidir orjini\nNormal şartlarda 1-2-3- atların kazanma şansı daha yüksek 55ve57 kg süprizlere dikkat 1,2,3numaralı %80 %20 7,8 numaralar | 3 ve yukarı ingilizler şartlı 4\nÇİM=% 70 100,95,85 PUANLAR ARASINDAGEÇER % 30 90 PUANLISI YAMAK 2 KULVAR NUMARA SİSTEMİNİN PUAN OLARAK 3 ÇÜ ATI GELİR SÜPRİZ OLARAK\nKUM= PLASELER ÇOK ŞANSLI HAFİF KİLOLU ATLARIN ŞANSI % 20\nNormal şartlarda fovarinin kazanma şansı çok yüksek 1-2-3 dışına çıkmaz ama tuttuğunuz süpr.at.dik.PLASELER ÇOK ŞANSLI HAFİF KG % 20 ŞANSI VAR | 3 ve yukarı ingilizler şartlı 5\nÇİM=KESİN SÜRDİREK AT VARSA KAZANIR YOKSA PLASELER KAZANIR\nKUM= GENEL PUANDAİLK 3 ATIN DIŞINA ÇIKMAZ((( 1 HANDİKAP AYIRMIŞSA TEK ))) 1200 kum 5 yaşındaki at kazanır\nKum dişi =handikapı 1,2 çi handikaplı yada 85,75 puanlı fotomaç\nAğır kg fovari atlar çok şanslı 1-2-3 atlar belirgin bir fovari varsa tek atın GENEL PUANDA İLK3 A | T DIŞINA ÇIKMA\nŞARTLI 11\nÇİM=AĞIR KG LI 3 AT ARASINDA GEÇER\nKUM= PLASELER KAZANIR | 3 yukarı İngilizler handikap 13\nÇİM=SÜPRİZ BİTER HAFİF KG LARA DİKKAT EDİN ((( yamak 3 handikapı 5 çi yüksek ata dikkat ve son yarışlarında kasaplığa giden at varsa kazanması için 2,3 çi olması gereken atlara dikkat ediniz kazanabilir )) 7,8,9 numaralı atlar kazanır agır kg sa süprizi tek geç )))\nKUM= İLK 3 AT % 70 KAZANIR % 30 HAFİF KG LAR ŞANSLI\n1,2,3 handikap % 70kazanır 7,8,9 numaralı atlar %30 şanslıdır | 3 yukarı ingilizler handikap 14\nÇİM=PUANLARI YÜKSEK 3 AT 55 kg 47 handikap ARASINDA BİTER\nKUM= FOVORİ PLASELER ÇOK ŞANSLI %20 SÜPRİZ BİTER 2 TANE 50 KG VARSA DIŞINA ÇIKMAZ SÜPRİZ BİTER\nKUM YAMAK /1 VEYA DİŞİ FARKETMEZ = 40,46 ,47,48 HANDİKAPLAR DIŞINA ÇIKMAZ FOVORİ PLASELER\n%75 fovori plaseler şanslı %25 süpriz 40,46,47,48 handikaplılar | 3 ve yukarı ingilizler handikap 15\nÇİM=(((( handikapta 43 ila 48 handikaplı iseler 5,6,7,8 Çİ ATLAR ise plase at varsa tek at olmayan fotomaç şablon dışı ata dikkat et )))) Türkiye puanına göre 1.2.3. atlar şanslıdır.\nKUM= 1,7,8,9 NUMARLI ATLAR KAZANIR % 30 DAHA AĞIR ATLAR GELİR (( HANDİKAP 1 Çİ FOVORİ İSE AGIR KG GELİR ))\nGenellikle bu koşu hafif kg süpriz biter imkanlarınız ölçüsünde çok at yazın %40 1-2-3 atlar\n7,8,9 NUMARALI ATLAR % 30 DAHA AĞIR ATLAR GELİR 5,6,7,8 handikaplar | 3 veyukarı ingilizler handikap 16\nKUM= EN ALT VE EN ÜST ATLAR GELİR\nÇİM= 1,8,,9 NUMARLI ATLAR % 40 ŞANSLIDIR SÜPRİZ BİTER 7,8,9 NUMARALI ATLARA DİKKAT 7- 10 at koşan yerlerde 6 ve 8 numaralı at fovori ise şansı yüksek gelir 52,5KG VE 48 KG ARASINDA KALMIŞ AT VARSA KG 55 KG AT GELİR\nFovarinin kazanma şansı çok az1, 2-3-4 handikap yada 48 51 kg arası çok süpriz biter 8,9 NUMARALI ATLAR %40 ŞANŞLI 7,8,9 handikaplar | 3 ve yukarı ingilizler handikap 17\nÇİM=FOTOMAÇ 95 PUANLISI FANATİK TGP EN DÜŞÜK PUANLISI\nHAFİF VE EN AGIR KG LARLA BİR BİTEBİLİR\nKUM= FOVORİ PLASE % 30 ŞANSLI % 70 SIRALAMADA 1,2,4,5,6 ATLAR ARASINDA GEÇER SİSTEM SIRASI\nHer ihtimale açık bir ağır kg fovari at belirgin ise tek atın ama 55 kg ve altı süpriz atlara dikkatFOVORİ PLASE %30ŞANSLI %70 DİĞER ATLAR ŞANSLI hafif ile en ağır kg arasındaki kglarla bitebilir | 3 ve yukarı ingilizler ŞARTLI 11\nÇİM=AĞIR KG LI 3 AT ARASINDA GEÇER\nKUM= PLASELER KAZANIR\nAğır kg atlar gelmez hafif kg çok süpriz biter %40 1-2 atlar şanslı\nAğır kg fovari atların kazanma şansı daha yüksek 50kg altı süpriz atlara dikkat | 3 ve yukarı ingilizler kv 6\nÇİM=2,3,4 ÇÜ TGP ATLAR ARASINDA GECER ERKEKTE DİŞİDE KULVAR NUMARA 3 SİSTEMİ 2 Çİ PUANLI SI GELİR\n8-18-22-26-61-82-90-122.BULTN..PUANI..BYGİR.COM | KUM= 1,2,3 handikaplar dışına çıkmaz 7 yaşındaki 2 at varsa dışına çıkmaz( 126 handikaplı at kazanır )\n1-2 ,3 atlar şanslı ama yinede tuttuğunuz atları yazmakta fayda var bir söz vardır AT ATI GEÇER\nÇİM DİŞİ= HANDİKAP 1 Çİ ATKAZANIR | 3 ve yukarı ingilizler kv7\nÇİM=GENELDE SÜPRİZ BİTER HAFİF KG LI ATLAR ÇOK ŞANSLI\nKUM= % 60 FOVORİ KAZANIR % 40 PLASE BİTER AYNI HANDİKAPLI PLASE ATLARIDA YAZ 2 Çİ HANDİKAPI PAS GEÇME MUTLAKA YAZ GELEBİLİR\nAğır kg 1-2-3 atların dışına çıkmaz FOVORİ %70 %30 PLASELER | 3 ve yukarı ingilizler kv 8\nÇİM=46,,55,, 60 ağır kglarda 2,3 kulvarlı atı tek atabilirsiniz\nKUM= TGP 2 Çİ 53 KG BOŞ KİLO KAZANIR 58 KG CİVARINDAKİ ATLAR KAZANIR HANDİKAPTA 3 ÇÜ ATLAR FOVORİNİN ŞANSI AZ DİŞİ İSE KAZANAMAZ % 10 SANSI\n1-2 atların dışına çıkmaz ağır 56 kg genellikle gelir 46 kg 55 kg atlar YOKSA 60 KG LISI 3 HANDİKAPLISI GELİR | 3 ve yukarı ingilizler kv 9\nÇİM=GENELDE FOVORİLER KAZANIR\nKUM= FOVORİ VARSA KAZANIR SÜRDİREK YOKSA PLASELERİN DIŞINA ÇIKMAZ\nAĞIR KG SA HANDİKAP 1 YÜKSEKSE Fovari gelmeyebilir 2-3-4 şanslı | 3veyukarı ingilizler kv 21\nÇİM=İLK 3 AT ARASINDA YENİ AYGIRLARIN YAVRULARI ÇOK ŞANSLIDIR\nKUM= 4,5,6 ATLAR % 70 ŞANSLI %30 1,2 ATLAR\n1-2-3 atların dışına çıkmaz fovari kazanır,4,5,6 HANDİKAPLAR%70 %30 1,2,3 HANDİKAPLILAR | 3 veyukarı ingilizler kv 22\nÇİM=DAİMA FOVORİ PLASE BİTER HAFİF KG LARIN ŞANSI AZ\nKUM=1,2 ATLAR % 70 KAZANIR % 30 ÇOK HAFİF KĞL AR\nHafif kg süpriz yada fovari atlar kazanır 1,2 HANDİKAP %70 %30 HAFİF KG | 3 YUKARI İNGİLİZLER KV 23\nKUM= FOVORİ % 65 % 35 BÜYÜK SÜPRİZ BİTER\nÇİM= İLK 3 AT ARASINDA BİTER\nFAVORİ %65 %35 BÜYÜKSÜPRİZ BİTER | 3 ve yukarı ingilizler kv 24\nÇİM=PLASELER ÇOK ŞANSLI HAFİF KG GELMEZ\nKUM= GENEL PUANI YÜKSEK 2 T ARASINDA GEÇER\n1-2-3 atlar şanslı fovari hafif kg ise tek atın 48-49 süpriz ihtimalide var GENEL PUANDA İLK 2 AT DIŞINA ÇIKMAZ | 3 ve yukarı ingilizler kv 25\nKUM=KALİTESİ BELLİ 2 AT ARASINDA BİTER\nÇİM= 110 PUANIN ÜSTÜNDEKİ ATLAR ARASINDA BİTER AYNI ORİNDE 2 ATIN DIŞINA ÇIKMAZ\nFovariler gelmeyebilir 48 kg çok süpriz biter KALİTESİ BELLİ 2 AT ARASINDA BİTER 110 puanın üstündekiler arasında biter | 3 ve yukarı İngilizler kv 26\nÇİM=GENELLİKLE 3 YAŞLILAR KAZANIR\nKUM= 3 YAŞLILARIN ŞANSI ÇOK FOVORİ PLASE ARASINDA ĞEÇER\ngenellikle 3 yaşlı atlar kazanır | 3 ve yukarı ingilizler açık koşu Grup 1-2-3\nÇİM=FOVORİ PLASELER ARASINDA BİTER ÇIKARSA 3 ÇÜ HANDİKAPLISI GELİR YADA 85 PUANLISI FOTOMAÇ İLK DÖRT AT DİŞİDE\nKUM= FOVORİ PLASELERİN DIŞINA ÇIKMAZ\n%80 1-2 ,3 HANDİKAPLAR atlar şanslı %20 sürpriz handikap puanı yüksek atlar 1inci şansta favori plase atlar dışına çıkmaz | 3 ve Yukarı İngilizler\nŞartlı – 2———-: Genelde ilk 4 at arasında geçer.\nKUM—————-: Favori gelmez, 3,4,5,6,..atlar.\nŞartlı – 3———-: Genelde favori biter.\nKUM—————-: Favori gelmez, 53,5—58 kg. arasındaki atlar sürpriz yapar.\nŞartlı – 4———-: Favoriler şanslıdır.\nKUM—————: 10 yarışın 8 i favori biter.\nŞartlı – 5 ———: Favori gelir, yoksa sürpriz olur.\nKUM—————: Sürpriz ihtimali yüksek.\nKV-6 —————: İlk 4 at\nKUM—————-: ilk 2 at gelmez, 3,4,5,6,7,8,9 atlar..(57 kg)\nKV-7 —————: Sürpriz biter\nKUM—————-: Genellikle 3. at\nKV-8—————-: Sürdirek , yoksa sürpriz.\nKUM—————-: Favoriler şanslı\nKV-9 —————: Favori(t.p.190 civarı) ağır kilo ise kazanır. Yoksa Sürpriz.\nKUM—————-: Türkiye puanına göre 1. ve 2. atlar\nKV-21 ————-: İlk 4 at şanslıdır.\nKUM—————-: Favori gelmez, 2.3.4 ncü atlar şanslıdır.\nKV-22 ————-: Sürpriz Biter.\nKUM—————-: Sürpriz\nKV-23 ————-:Türkiye puanına göre 1.2.3. atların dışına çıkmaz.\nKUM—————-:Genelde süpriz olur\nKV-24 ————-:—- Favori hafif kilo ise şanslıdır. Yoksa süpriz olur\nKUM—————-: Favori hafif kilo ise şanslıdır. Yoksa süpriz olur.\nHandikap-13—-:Türkiye puanına göre 1.2.3.atlar şanslıdır.\nKUM—————-: Türkiye puanına göre 1.2.atlar özellikle hafif kilolar\nHandikap-14—-: Sürpriz Biter. Türkiye puanına göre ilk 9 at\nKUM—————-: Hafif kilolu atlar bomba yapabilir.\nHandikap-15—-: İlk 4-5 at şanslıdır.\nKUM—————-: Her türlü sonuç gelebilir, genelde bombalar gelebilir.\nHandikap-16—-: Favoriler çok şanslı.\nKUM—————-: Sürpriz veya plaseler arasında, çoğunlukla 4. at gelir.\nHandikap-17—-: Favori ağır kilo ise Sürpriz olur.Hafif ise 1.2.3.4.atların dışına çıkmaz\nKUM—————-: Genellikle, 2.3.4 ncü atlar."}, {"key": "3 ve yukarı ingilizler şartlı 3 3 VE YUKARI İNGİLİZLER\n\n\n3 ve yukarı ingilizler şartlı 2", "text": "ÇİM=GENELDE SÜPRİZ BİTER % 30PLASELER KAZANIR | KUM= GENELDE SÜPRİZ BİTER FOVORİNİN ŞANSI AZ | Her ihtimale açık bir koşu çok at yazın 57 kg süpriz atlara dikkat %60 1-2-3 %40 süpriz biter | 3 ve yukarı ingilizler şartlı 3 | ÇİM DİŞİ =HANDİKAP 1 FOVORİ KAZANIR ENFAZLA 1 ,2 HANDİKAPLILAR | ÇİM= AĞIR KG 1,2,3 NUMARALI ATLAR NOLU % 20 7,8 NUMARALI ATLAR KAZANIR | KUM= FOVORİ PLASE ATLAR ARASINDA GEÇER  bombası handikapı 2 at kalitelidir orjini | Normal şartlarda 1-2-3- atların kazanma şansı daha yüksek 55ve57 kg süprizlere dikkat 1,2,3numaralı %80 %20 7,8 numaralar"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler şartlı 4", "text": "ÇİM=% 70   100,95,85 PUANLAR ARASINDAGEÇER    % 30 90 PUANLISI  YAMAK 2 KULVAR NUMARA SİSTEMİNİN  PUAN OLARAK 3 ÇÜ ATI GELİR SÜPRİZ OLARAK | KUM= PLASELER ÇOK ŞANSLI HAFİF KİLOLU ATLARIN ŞANSI % 20 | Normal şartlarda fovarinin kazanma şansı çok yüksek 1-2-3 dışına çıkmaz ama tuttuğunuz süpr.at.dik.PLASELER ÇOK ŞANSLI HAFİF KG % 20 ŞANSI VAR"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler şartlı 5", "text": "ÇİM=KESİN SÜRDİREK AT VARSA KAZANIR YOKSA PLASELER KAZANIR | KUM= GENEL PUANDAİLK 3 ATIN DIŞINA ÇIKMAZ((( 1 HANDİKAP AYIRMIŞSA TEK ))) | Kum dişi =handikapı 1,2 çi handikaplı  yada 85,75 puanlı fotomaç | Ağır kg fovari atlar çok şanslı 1-2-3 atlar belirgin bir fovari varsa tek atın GENEL PUANDA İLK3 AT DIŞINA ÇIKMAZ\nŞARTLI 11 | ÇİM=AĞIR KG LI 3 AT ARASINDA GEÇER | KUM= PLASELER KAZANIR"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 yukarı İngilizler handikap 13", "text": "ÇİM=SÜPRİZ BİTER HAFİF KG LARA DİKKAT EDİN (((  yamak 3   handikapı 5 çi yüksek ata dikkat ve son yarışlarında kasaplığa giden at varsa kazanması için 2,3 çi olması gereken atlara dikkat ediniz kazanabilir  )) 7,8,9 numaralı atlar kazanır agır kg sa süprizi tek geç ))) | KUM= İLK 3 AT % 70 KAZANIR % 30 HAFİF KG LAR ŞANSLI | 1,2,3 handikap % 70kazanır 7,8,9 numaralı atlar %30 şanslıdır"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 yukarı ingilizler handikap 14", "text": "ÇİM=PUANLARI YÜKSEK 3 AT 55 kg 47 handikap ARASINDA BİTER | KUM= FOVORİ PLASELER ÇOK ŞANSLI %20 SÜPRİZ BİTER 2 TANE 50 KG VARSA DIŞINA ÇIKMAZ SÜPRİZ BİTER | KUM YAMAK /1 VEYA DİŞİ FARKETMEZ = 40,46 ,47,48 HANDİKAPLAR DIŞINA ÇIKMAZ FOVORİ PLASELER | %75 fovori plaseler şanslı %25 süpriz  40,46,47,48 handikaplılar"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler handikap 15", "text": "ÇİM=(((( handikapta 43 ila 48 handikaplı iseler  5,6,7,8 Çİ ATLAR ise plase at varsa tek at olmayan fotomaç şablon dışı ata dikkat et )))) Türkiye puanına göre 1.2.3. atlar şanslıdır. | KUM= 1,7,8,9 NUMARLI ATLAR KAZANIR % 30 DAHA AĞIR ATLAR GELİR (( HANDİKAP 1 Çİ FOVORİ İSE AGIR KG GELİR )) | Genellikle bu koşu hafif kg süpriz biter imkanlarınız ölçüsünde çok at yazın %40 1-2-3 atlar\n7,8,9 NUMARALI ATLAR % 30 DAHA AĞIR ATLAR GELİR 5,6,7,8 handikaplar"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 veyukarı ingilizler handikap 16", "text": "KUM= EN ALT VE EN ÜST ATLAR GELİR | ÇİM= 1,8,,9 NUMARLI ATLAR % 40 ŞANSLIDIR SÜPRİZ BİTER 7,8,9 NUMARALI ATLARA DİKKAT  7- 10 at koşan yerlerde 6 ve 8 numaralı at fovori ise şansı yüksek gelir  52,5KG VE 48 KG ARASINDA KALMIŞ AT VARSA KG 55 KG AT GELİR | Fovarinin kazanma şansı çok az1, 2-3-4 handikap yada 48 51 kg arası çok süpriz biter 8,9 NUMARALI ATLAR %40 ŞANŞLI 7,8,9 handikaplar"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler handikap 17", "text": "ÇİM=FOTOMAÇ 95 PUANLISI  FANATİK TGP EN DÜŞÜK PUANLISI\nHAFİF VE EN AGIR KG LARLA BİR BİTEBİLİR | KUM= FOVORİ PLASE % 30 ŞANSLI   % 70 SIRALAMADA 1,2,4,5,6 ATLAR ARASINDA GEÇER SİSTEM SIRASI | Her ihtimale açık bir ağır kg fovari at belirgin ise tek atın ama 55 kg ve altı süpriz atlara dikkatFOVORİ PLASE %30ŞANSLI %70 DİĞER ATLAR ŞANSLI hafif ile en ağır kg arasındaki kglarla bitebilir"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler ŞARTLI 11", "text": "ÇİM=AĞIR KG LI 3 AT ARASINDA GEÇER | KUM= PLASELER KAZANIR | Ağır kg atlar gelmez hafif kg çok süpriz biter %40 1-2 atlar şanslı\nAğır kg fovari atların kazanma şansı daha yüksek 50kg altı süpriz atlara dikkat"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv 6", "text": "ÇİM=2,3,4 ÇÜ TGP ATLAR ARASINDA GECER ERKEKTE   DİŞİDE KULVAR NUMARA 3 SİSTEMİ 2 Çİ PUANLI SI GELİR \n8-18-22-26-61-82-90-122.BULTN..PUANI..BYGİR.COM | KUM=  1,2,3  handikaplar dışına çıkmaz 7 yaşındaki 2 at varsa dışına çıkmaz( 126 handikaplı at kazanır ) | 1-2 ,3 atlar şanslı ama yinede tuttuğunuz atları yazmakta fayda var bir söz vardır AT ATI GEÇER\nÇİM DİŞİ= HANDİKAP 1 Çİ ATKAZANIR"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv7", "text": "ÇİM=GENELDE SÜPRİZ BİTER HAFİF KG LI ATLAR ÇOK ŞANSLI | KUM= % 60 FOVORİ KAZANIR % 40 PLASE BİTER AYNI HANDİKAPLI PLASE ATLARIDA YAZ            2 Çİ HANDİKAPI PAS GEÇME MUTLAKA YAZ GELEBİLİR | Ağır kg 1-2-3 atların dışına çıkmaz FOVORİ %70  %30 PLASELER"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv 8", "text": "ÇİM=46,,55,,   60 ağır kglarda 2,3 kulvarlı atı tek atabilirsiniz | KUM= TGP 2 Çİ  53 KG  BOŞ KİLO KAZANIR 58 KG CİVARINDAKİ ATLAR KAZANIR HANDİKAPTA 3 ÇÜ ATLAR FOVORİNİN ŞANSI AZ  DİŞİ İSE KAZANAMAZ % 10 SANSI | 1-2 atların dışına çıkmaz ağır 56  kg genellikle gelir  46 kg 55 kg atlar YOKSA 60 KG LISI 3 HANDİKAPLISI GELİR"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv 9", "text": "ÇİM=GENELDE FOVORİLER KAZANIR | KUM= FOVORİ VARSA KAZANIR SÜRDİREK YOKSA PLASELERİN DIŞINA ÇIKMAZ | AĞIR KG SA HANDİKAP 1 YÜKSEKSE Fovari gelmeyebilir 2-3-4 şanslı"}, {"key": "3 ve yukarı ingilizler şartlı 3 3veyukarı ingilizler kv 21", "text": "ÇİM=İLK 3 AT ARASINDA YENİ AYGIRLARIN YAVRULARI ÇOK ŞANSLIDIR | KUM= 4,5,6 ATLAR % 70 ŞANSLI %30 1,2 ATLAR | 1-2-3 atların dışına çıkmaz fovari kazanır,4,5,6 HANDİKAPLAR%70 %30 1,2,3 HANDİKAPLILAR"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 veyukarı ingilizler kv 22", "text": "ÇİM=DAİMA FOVORİ PLASE BİTER HAFİF KG LARIN ŞANSI AZ | KUM=1,2 ATLAR % 70 KAZANIR % 30 ÇOK HAFİF KĞL AR | Hafif kg süpriz yada fovari atlar kazanır 1,2 HANDİKAP %70 %30 HAFİF KG"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 YUKARI İNGİLİZLER KV 23", "text": "KUM= FOVORİ % 65 % 35 BÜYÜK SÜPRİZ BİTER | ÇİM= İLK 3 AT ARASINDA BİTER | FAVORİ %65 %35 BÜYÜKSÜPRİZ BİTER"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv 24", "text": "ÇİM=PLASELER ÇOK ŞANSLI HAFİF KG GELMEZ | KUM= GENEL PUANI YÜKSEK 2 T ARASINDA GEÇER | 1-2-3 atlar şanslı fovari hafif kg ise tek atın 48-49 süpriz ihtimalide var GENEL PUANDA İLK 2 AT DIŞINA ÇIKMAZ"}, {"key": "3 ve yukarı ingilizler şartlı 3 3 ve yukarı ingilizler kv 25", "text": "KUM=KALİTESİ BELLİ 2 AT ARASINDA BİTER | ÇİM= 110 PUANIN ÜSTÜNDEKİ ATLAR ARASINDA BİTER AYNI ORİNDE 2 ATIN DIŞINA ÇIKMAZ | Fovariler gelmeyebilir 48 kg çok süpriz biter KALİTESİ BELLİ 2 AT ARASINDA BİTER 110 puanın üstündekiler arasında biter"}, {"key": "genellikle 3 yaşlı atlar kazanır 3 ve yukarı İngilizler kv 26", "text": "ÇİM=GENELLİKLE 3 YAŞLILAR KAZANIR | KUM= 3 YAŞLILARIN ŞANSI ÇOK FOVORİ PLASE ARASINDA ĞEÇER | genellikle 3 yaşlı atlar kazanır"}, {"key": "4 yukarı ingilizler 3 ve yukarı ingilizler açık koşu Grup 1-2-3", "text": "ÇİM=FOVORİ PLASELER ARASINDA BİTER ÇIKARSA 3 ÇÜ HANDİKAPLISI GELİR YADA 85 PUANLISI FOTOMAÇ İLK DÖRT AT DİŞİDE | KUM= FOVORİ PLASELERİN DIŞINA ÇIKMAZ | %80 1-2 ,3 HANDİKAPLAR atlar şanslı %20 sürpriz handikap puanı yüksek atlar 1inci şansta favori plase atlar dışına çıkmaz\n\n\n3 ve Yukarı İngilizler\nŞartlı – 2———-: Genelde ilk 4 at arasında geçer.\nKUM—————-: Favori gelmez, 3,4,5,6,..atlar.\nŞartlı – 3———-: Genelde favori biter.\nKUM—————-: Favori gelmez, 53,5—58 kg. arasındaki atlar sürpriz yapar.\nŞartlı – 4———-: Favoriler şanslıdır.\nKUM—————: 10 yarışın 8 i favori biter.\nŞartlı – 5 ———: Favori gelir, yoksa sürpriz olur.\nKUM—————: Sürpriz ihtimali yüksek.\nKV-6 —————: İlk 4 at\nKUM—————-: ilk 2 at gelmez, 3,4,5,6,7,8,9 atlar..(57 kg)\nKV-7 —————: Sürpriz biter\nKUM—————-: Genellikle 3. at\nKV-8—————-: Sürdirek , yoksa sürpriz.\nKUM—————-: Favoriler şanslı\nKV-9 —————: Favori(t.p.190 civarı) ağır kilo ise kazanır. Yoksa Sürpriz.\nKUM—————-: Türkiye puanına göre 1. ve 2. atlar\nKV-21 ————-: İlk 4 at şanslıdır.\nKUM—————-: Favori gelmez, 2.3.4 ncü atlar şanslıdır.\nKV-22 ————-: Sürpriz Biter.\nKUM—————-: Sürpriz\nKV-23 ————-:Türkiye puanına göre 1.2.3. atların dışına çıkmaz.\nKUM—————-:Genelde süpriz olur\nKV-24 ————-:—- Favori hafif kilo ise şanslıdır. Yoksa süpriz olur\nKUM—————-: Favori hafif kilo ise şanslıdır. Yoksa süpriz olur.\nHandikap-13—-:Türkiye puanına göre 1.2.3.atlar şanslıdır.\nKUM—————-: Türkiye puanına göre 1.2.atlar özellikle hafif kilolar\nHandikap-14—-: Sürpriz Biter. Türkiye puanına göre ilk 9 at\nKUM—————-: Hafif kilolu atlar bomba yapabilir.\nHandikap-15—-: İlk 4-5 at şanslıdır.\nKUM—————-: Her türlü sonuç gelebilir, genelde bombalar gelebilir.\nHandikap-16—-: Favoriler çok şanslı.\nKUM—————-: Sürpriz veya plaseler arasında, çoğunlukla 4. at gelir.\nHandikap-17—-: Favori ağır kilo ise Sürpriz olur.Hafif ise 1.2.3.4.atların dışına çıkmaz\nKUM—————-: Genellikle, 2.3.4 ncü atlar. | 4 ve yukarı ingilizler | ŞARTLI 2\nÇİM=55 KG AĞIRLIK TAŞIYAN ATLAR VEYA PLASELER KAZANIR\nKUM=FOVORİ PLASELER ARASINDA BİTER 55 kg civarı favori veya Türkiye puanına göre 3.4.at 4,5,7..yaşındaki..atlar…kazanır\n1,2, %80 HANDİKAP %10 3VEYA 4 ÇÜ 57 KG DİKKAT HANDİKAP BİRLİKTE FOVORİ PLASELER\nYAMAK 1 DE HANDİKAP 1 55 kg taşıyan atlar veya plaseler | ŞARTLI 3\nÇİM=((( 50 KG 4 YAŞINDA )))\n\nKUM= (( http://www.altilianaliz.com/    1 ve 2 çi atı gelir % 80 )) | ((1,4 ,2,9  STARTLI KAZANIR )) | FOVORİ PLASELERLE VE 1,2,3 HANDİKAP 5 YAŞINDAKİ 2 AT ARASINDA GEÇER GENELDE ((((( DİŞİDE 1,VE 4 HANDİKAP )))) YAMAK 3TE 1,2,3 HANDİKAPLAR YADA EN HAFİF KG 45-67 handikap dikkat\nŞARTLI 4\nÇİM=PLASELER ŞANSLI FOVORİNİN ŞANSI AZ 53-55 kg 1-2-handikap 3 HANDİKAP DİKKAT\nKUM= 54-kg1,2,handikaplı—–58–kg–1,2,,,handikaplılar–kazanır\n((( DİŞİDE 57 KG KAZANIR DİKKAT 54 KG ATLAR ))) Favori şanslı…HANDİKAP…%..LİYİ..1..AT.KAZANIR | 1 Çİ AT SR 1400\n1,2,3,4 HANDİKAP DİŞİDE 57-54 KG 5 yaşındaki 4 çü handikap kazanır | ŞARTLI 5\nÇİM=(( DİŞİDE 2,,4 HANDİKAPLAR )))PUANLARI YÜKSEK 4 AT ARASINDA BİTER\nKUM= DİŞİDE 56,57 KG DİKKAT (( BOMBASI 7HANDİKAP)\nfotomaç % 50 100,90 ,,95puan % 50 handikap 1. ORTALAMA..GANYAN..YÜKSK..1.Çİ..AT…DİŞİ | 2 Çİ AT SIRALAMADA 1400 KUM\n1,2,3 ÇÜ HANDİKAPLAR FOVORİ plase İSE yaşı 5,6,yaşlarında ise 4 yaşındaki at kazanır\n(( 8 YAŞINDAKİ SÜPRİZ ))) ((( 4 ÇÜ VE 7 Çİ HANDİKAP BOMBASI ))) KV 7 VE AÇIK YARIŞ KOŞUP 1,2 Çİ OLAN KAZANMA ŞANSI VAR DİŞİLERDE 2 HANDİKAP 4 YAŞINDAKİ | ŞARTLI 11\nÇİM=FOVORİ PLASELER ARASINDA BİTER\nKUM= GENEL PUANDA İLK 3 AT VE EN HAFİF 3 AT ARASINDA GEÇER\nGENEL PUANDA İLK 1,2,3 ARASINDA VEYA EN HAFİF 1,2,3 ARASINDA | KV 6\nÇİM=HAFİF KG VARSA KAZANIR YOKSA BOMBALAR PATLAR 1 Çİ AT SR 1400\nKUM= FOVORİ GELİR SÜRDİREKSE1, 2,3,4 ATLAR ÇOK ŞANSLI ((( DİŞİDE HANDİKAP 1,,2 LER ))) Türkiye puanına göre 3.4.atlar şanslıdır.\n1HANDİKAP ,2, HANDİKAP VE 54 KG LARIN..1Çİ.HANDİKAP..ARASINDA GEÇER DİŞİDE 1,2 HANDİKAPLAR FOVORİ PLASELER ((( 5 ,6,7, 8 yaşındaki atların mücadelesidir ))) | KV 7\nÇİM=% 25 FOVORİ % 70 ÇOK SÜPRİZ BİTER\nKUM= 4,5 YAŞ FOVORİ ARASINDA GEÇER DİŞİDE ))) ERKEKTE 6 7 YAŞLI ATLAR 2 AT ARASINDA GEÇER Türkiye puanına göre 1.2.3.atlar şanslıdır.\n1,2,3,5,6,8, HANDİKAPLAR 56 KG TEKSE ŞANSI YÜKSEK ERKEKTE 6 VE 7 YAŞINDAKİ ATLAR DİŞİDE4,5YAŞINDAKİ ATLAR KAZANIR | KV 8\nÇİM=PLASELER ÇOK SANSLI % 10 FOVORİ KAZANIR\nKUM= 56,,57,,KG LI ATLAR ÇOK ŞANSLI FOVORİNİN SANSI AZ HANDİKAP 2 DİKKAT Favori kazanır.\nSÜRDİREK FOVORİ 4 ve 5 YAŞINDAYSA HANDİKAP 121 KADAR ENSON %80 KAZANIR YOKSA ? 125 HANDİKAP VARSA KAZANAMAZ 2Çİ HANDİKAP GELİR veya 6ve 7 YAŞINDAKİ AT KAZANIR | KV 9\nÇİM=PUANI YÜKSEK 2 ATTAN BİRİ KAZANIR\nKUM= FOVORİ SÜRDİREK ŞANSI ÇOK YOKSA BOMBALAR PATLAR Türkiye puanına göre 1. ve 2. atlarKESİN FOVORİNİN HANDİKABI YÜKSEKSE KAZANIR YOKSA BOMBA PATLAR | KV 21\nÇİM=1,2,3,4 GENEL PUANI YÜKSEK ATLAR KAZANIR\nKUM= YERLİ YENİ AYGIRLRIN YAVRULARI ÇOK ŞANSLIDIR Türkiye puanına göre 2.3.4.atlar şanslıdır.\nYERLİ YENİ AYGIRLARIN YAVRULARI ÇOK ŞANSLI | KV 22\nÇİM=DAİMA SÜPRİZ BİTER\nKUM=1,2 HANDİKAP ATLAR % 65 3,4,5 PUANLI ATLAR % 35 ŞANSLIDIR BOMBA\n1,2, HANDİKAP%65 3,4,5 GENEL PUAN VE NUMARALAR ŞANSLI | KV 23\nÇİM=HAFİF KG LI PLASE ATLAR\nKUM= FOVORİ GELMEZSE SÜPRİZ BİTER 6,7 ATLAR % 35 KAZANIR Genelde süpriz olur.\ngenelde fovari %60 %40süpriz 6,7 Çİ HANDİKAP | KV 24\nÇİM=PUANLARI 3,4,5 SIRADA OLANLAR % 80 ŞANSLI VEYA 1,2 NUMARALI ATLAR % 20 ŞANSLIDIR GENELDE PLASELER ŞANSLI\nKUM= DAİMA İLK 2 AT ARASINDA BİTER Favori hafif kilo ise şanslıdır. Yoksa süpriz olur.\n90-120 puanlılar 1,2 ATLAR %80 88 puanlı %20 3,4,5 handikap %80 1,2 numaralılar %20 şanslıdır | KV 25\nÇİM=% 75 YAŞLI ATLAR % 25 5 İLA 7 YAŞINDAKİ ATLAR ŞANSLIDIR\nKUM= 4,5 ATLAR HANDİKAP % 65 KAZANIR % 35 45,,75 PUANLI ATLAR ŞANSLI Favorinin şansı azdır. Genelde 2.3.atlar şanslıdır.\n3.4.5handikap %65 1,2%20 45-70-75 arası %35 şanslı %75 yaşlı atlar %25 5 ila 7 handikaplılar | KV 26\nÇİM=% 85 PUANLI ATLAR KAZANIR\nKUM=AĞIR KG YAŞLI ATLAR % 85 GENÇLER % 15 KAZANIR Türkiye puanına göre ilk 4 atın dışına çıkmaz.\nAGIR KG yaşlılar %70 GENÇLER %30 şanslıdır | HANDİKAP 13\nKUM= % 75 İLK 3 AT ŞANSLI % 25 HAFİF KG LI ATLAR KAZANIR\nSÜRDİREK 1,,,, VARSA GEÇİLMEZ Türkiye puanına göre 1.2.atlar özellikle hafif kilolar\n2,3 GENEL PUAN handikap 1,2,3 %70 .. 8 …%20…30,35,47 handikaplar VE HAFİF KG %10 | HANDİKAP 14\nÇİM=\nKUM= YAMAK 1,2,3 (( HANDİKAPLAR 100 PUANLI 4 ,6 HANDİKAPLI İSE ))(( 48,49 HANDİKAP YAMAK 2 DE )) 1,3,4,5,7 HANDİKAPLI ATLAR KAZANIR((( AZ ATLARDA FOVORİ VE 2,8,NUMARALI ATLAR MUTLAKA YAZILMALIDIR))) Favori şanslı yoksa Süpriz\nGenelde sürpriz en az plase ise puanla ve handikapla birlikte..20, 39, 48,49,51 handikaplı 4 YAŞINDAKİ ((( dişilerde 58,5 kg 1,2,3 hanikaplI ))) 3 tane buçuklu varsa fovori 45 HANDİKAP ENSON ŞARTLI 5 KOŞAN 2,5,6,8,9 NUMARALI ATLAR KAZANIR YAMAK 3 TE 4 DÜNÇÜ ve 7 çi HANDİKAP yaş olarak 4 yaştındakiler % 65 kazanır | HANDİKAP 15\nÇİM=EN ALTTAKİ HAFİF KG EN ÜSTTEKİ ATLARLA 2 Lİ BİTER | 20-35-40-42-55-66 bülten puan beygir com 1600 çim\nKUM=2 Çİ AT SR 1400\nEN HAFİF KG LI 1,2 NUMARALI ATLAR 2Lİ YAPAR Türkiye puanına göre ilk 7 at\n((((( 8 VE 9,10 ATTA FOVORİ KAZANIR 1 HANDİKAP DAHİL 2 ve 8 numaralar İÇİNDE GEÇER))) ÖZELLİKLE HANDİKAP 1,3,4,5,6 ATLAR ARASINDA GEÇER 5 yaş at kazanır YAMAK 2 DE 2 VE 7 HANDİKAPLI ATLAR EN HAFİF BOMBA SONLARDAN GERİYE DOGRUPUANLI HAFİF KG 5 YAŞ DİŞİLERDE VEYA YAMAKLARDA 2 DE 2,3,4 1 VE 3 TE…4.at..içerisinde biter 1 Çİ AT SIRALAMADA 1900 KUM | HANDİKAP 16\nÇİM=KOŞAN AT SAYISININ TAM ORTASINDAKİ 3 ATTAN BİRİ KAZANIR\nKUM= 2 Çİ AT SIRALAMADA 1900 KUM\n((( 1,2,3,4 NUMARALI ATLAR ))) koşan at sayısının tam ortasındaki 3 attan biri kazanır , 4,5 VE 6 YAŞINDAKİ ATLARA DİKKAT 40-42-48-49-50-58-59 HANDİKAPLAR 4 YAŞINDAKLER | HANDİKAP 17\nÇİM=ÖZELLİKLE 6,7,8,9 NUMARALI ATLAR % 85 EN ALT VE EN ÜSTTEKİ AT % 15 ŞANSLIDIR\nKUM= 5,6,7,8,9NUMARALI ATLAR plase\n5,6,7,8,9 NUMARLAR HANDİKAP 2,3,5 | AÇIK GR 1\nÇİM=genelde fovorisi kazanır\nKUM= Favori kazanır.\ngenel olarak fovori yıkılırsa 58 kg YAŞI YÜKSEK İLE DÜŞÜK ATI İHMAL ETME | AÇIK GR 2\nÇİM=\nKUM= | AÇIK GR 3\nÇİM=handikap yüksek yaşı yüksek at kazanır\nKUM= başlangıç 59,5 KG LRDA 4 HANDİKAPLI SÜPRİZ 5 yaşındaki at kazanır 59 kg lar başlangıç 4 yaşındaki handikap 2 çi 58kg at kazanır | 4 yukarı ingilizler"}, {"key": "4 yukarı ingilizler ŞARTLI 2", "text": "ÇİM=55 KG AĞIRLIK TAŞIYAN ATLAR VEYA PLASELER KAZANIR | KUM=FOVORİ PLASELER ARASINDA BİTER 55 kg civarı favori veya Türkiye puanına göre 3.4.at 4,5,7..yaşındaki..atlar...kazanır | 1,2, %80 HANDİKAP %10 3VEYA 4 ÇÜ 57 KG DİKKAT HANDİKAP BİRLİKTE FOVORİ PLASELER | YAMAK 1 DE HANDİKAP 1   55 kg taşıyan atlar veya plaseler"}, {"key": "4 yukarı ingilizler ŞARTLI 3", "text": "ÇİM=((( 50 KG 4 YAŞINDA ))) | KUM=(( 56,5 KG 5 YAŞINDA )) Favorinin şansı az. Türkiye puanına göre 3.4.5.at şanslı 1,4 STARTLI KAZANIR\n\nFOVORİ PLASELERLE VE 1,2,3  HANDİKAP 5 YAŞINDAKİ 2 AT ARASINDA GEÇER GENELDE ((((( DİŞİDE 1,VE 4 HANDİKAP ))))  YAMAK 3TE 1,2,3 HANDİKAPLAR YADA EN HAFİF KG 45-67 handikap dikkat | 1200 kum | 2000 kum"}, {"key": "4 yukarı ingilizler ŞARTLI 4", "text": "ÇİM=PLASELER ŞANSLI FOVORİNİN ŞANSI AZ 53-55 kg 1-2-handikap 3 HANDİKAP DİKKAT | KUM= 54-kg1,2,handikaplı-----58--kg--1,2,,,handikaplılar--kazanır\n((( DİŞİDE 57 KG KAZANIR DİKKAT 54 KG ATLAR ))) Favori şanslı...HANDİKAP...%..LİYİ..1..AT.KAZANIR\n\n1  Çİ AT SR 1400 | 1,2,3,4 HANDİKAP    DİŞİDE 57-54 KG 5 yaşındaki 4 çü handikap kazanır"}, {"key": "4 yukarı ingilizler ŞARTLI 5", "text": "ÇİM=(( DİŞİDE 2,,4 HANDİKAPLAR )))PUANLARI YÜKSEK 4 AT ARASINDA BİTER | KUM= DİŞİDE 56,57 KG DİKKAT (( BOMBASI 7HANDİKAP)\nfotomaç  % 50 100,90 ,,95puan   % 50   handikap 1. ORTALAMA..GANYAN..YÜKSK..1.Çİ..AT...DİŞİ | 2 Çİ  AT SIRALAMADA 1400 KUM\n1,2,3 ÇÜ HANDİKAPLAR  FOVORİ plase  İSE yaşı 5,6,yaşlarında ise 4 yaşındaki at kazanır | (( 8 YAŞINDAKİ SÜPRİZ  )))     ((( 4 ÇÜ VE 7 Çİ HANDİKAP BOMBASI ))) KV 7 VE AÇIK YARIŞ KOŞUP 1,2 Çİ OLAN KAZANMA ŞANSI VAR DİŞİLERDE 2 HANDİKAP 4 YAŞINDAKİ"}, {"key": "4 yukarı ingilizler ŞARTLI 11", "text": "ÇİM=FOVORİ PLASELER ARASINDA BİTER | KUM= GENEL PUANDA İLK 3 AT VE EN HAFİF 3 AT ARASINDA GEÇER | GENEL PUANDA İLK 1,2,3 ARASINDA VEYA EN HAFİF 1,2,3 ARASINDA"}, {"key": "4 yukarı ingilizler KV 6", "text": "ÇİM=HAFİF KG VARSA KAZANIR YOKSA BOMBALAR PATLAR  1 Çİ AT SR 1400 | KUM= FOVORİ GELİR SÜRDİREKSE1, 2,3,4 ATLAR ÇOK ŞANSLI ((( DİŞİDE HANDİKAP 1,,2 LER ))) Türkiye puanına göre 3.4.atlar şanslıdır. | 1HANDİKAP ,2, HANDİKAP VE 54 KG  LARIN..1Çİ.HANDİKAP..ARASINDA GEÇER DİŞİDE 1,2 HANDİKAPLAR FOVORİ PLASELER ((( 5 ,6,7, 8 yaşındaki atların mücadelesidir ))) | 1400 çim"}, {"key": "4 yukarı ingilizler KV 7", "text": "ÇİM=% 25 FOVORİ  % 70 ÇOK SÜPRİZ BİTER | KUM= (( 4,5 YAŞ FOVORİ ARASINDA GEÇER DİŞİDE ))) ERKEKTE 6 7 YAŞLI ATLAR  2 AT ARASINDA GEÇER  Türkiye puanına göre 1.2.3.atlar şanslıdır. | 1,2,3,5,6,8, HANDİKAPLAR 56 KG TEKSE ŞANSI YÜKSEK ERKEKTE 6 VE 7 YAŞINDAKİ ATLAR DİŞİDE4,5YAŞINDAKİ ATLAR KAZANIR"}, {"key": "4 yukarı ingilizler KV 8", "text": "ÇİM=PLASELER ÇOK SANSLI % 10 FOVORİ KAZANIR | KUM= 56,,57,,KG LI ATLAR ÇOK ŞANSLI FOVORİNİN SANSI AZ HANDİKAP 2 DİKKAT  Favori kazanır. | SÜRDİREK FOVORİ  4 ve 5 YAŞINDAYSA HANDİKAP 121    KADAR ENSON  %80 KAZANIR   YOKSA ?  125 HANDİKAP VARSA KAZANAMAZ  2Çİ HANDİKAP GELİR veya  6ve 7 YAŞINDAKİ AT KAZANIR"}, {"key": "4 yukarı ingilizler KV 9", "text": "ÇİM=PUANI YÜKSEK 2 ATTAN BİRİ KAZANIR | KUM= FOVORİ SÜRDİREK ŞANSI ÇOK YOKSA BOMBALAR PATLAR  Türkiye puanına göre 1. ve 2. atlarKESİN FOVORİNİN HANDİKABI YÜKSEKSE KAZANIR YOKSA BOMBA PATLAR"}, {"key": "4 yukarı ingilizler KV 21", "text": "ÇİM=1,2,3,4 GENEL PUANI YÜKSEK ATLAR KAZANIR | KUM= YERLİ YENİ AYGIRLRIN YAVRULARI ÇOK ŞANSLIDIR Türkiye puanına göre 2.3.4.atlar şanslıdır. | YERLİ YENİ AYGIRLARIN YAVRULARI ÇOK ŞANSLI"}, {"key": "4 yukarı ingilizler KV 22", "text": "ÇİM=DAİMA SÜPRİZ BİTER | KUM=1,2 HANDİKAP ATLAR % 65 3,4,5 PUANLI ATLAR % 35 ŞANSLIDIR BOMBA | 1,2, HANDİKAP%65 3,4,5 GENEL PUAN VE NUMARALAR ŞANSLI"}, {"key": "4 yukarı ingilizler KV 23", "text": "ÇİM=HAFİF KG LI PLASE ATLAR | KUM= FOVORİ GELMEZSE SÜPRİZ BİTER 6,7 ATLAR % 35 KAZANIR  Genelde süpriz olur. | genelde fovari %60 %40süpriz 6,7 Çİ HANDİKAP"}, {"key": "4 yukarı ingilizler KV 24", "text": "ÇİM=PUANLARI 3,4,5 SIRADA OLANLAR % 80 ŞANSLI VEYA 1,2 NUMARALI ATLAR % 20 ŞANSLIDIR GENELDE PLASELER ŞANSLI | KUM= DAİMA İLK 2 AT ARASINDA BİTER Favori hafif kilo ise şanslıdır. Yoksa süpriz olur. | 90-120 puanlılar 1,2 ATLAR %80 88 puanlı %20   3,4,5 handikap %80 1,2 numaralılar %20 şanslıdır"}, {"key": "4 yukarı ingilizler KV 25", "text": "ÇİM=% 75 YAŞLI ATLAR    % 25 5 İLA 7 YAŞINDAKİ ATLAR ŞANSLIDIR | KUM= 4,5 ATLAR HANDİKAP % 65 KAZANIR   % 35 45,,75 PUANLI ATLAR ŞANSLI  Favorinin şansı azdır. Genelde 2.3.atlar şanslıdır. | 3.4.5handikap %65 1,2%20 45-70-75 arası %35 şanslı %75 yaşlı atlar %25 5 ila 7 handikaplılar"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır KV 26", "text": "ÇİM=% 85 PUANLI ATLAR KAZANIR | KUM=AĞIR KG YAŞLI ATLAR % 85    GENÇLER % 15 KAZANIR Türkiye puanına göre ilk 4 atın dışına çıkmaz. | AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır HANDİKAP 13", "text": "KUM= % 75 İLK 3 AT ŞANSLI % 25 HAFİF KG LI ATLAR KAZANIR | SÜRDİREK 1,,,, VARSA GEÇİLMEZ Türkiye puanına göre 1.2.atlar özellikle hafif kilolar | 2,3 GENEL PUAN handikap 1,2,3 %70 .. 8 ...%20...30,35,47 handikaplar VE HAFİF KG %10"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır HANDİKAP 14", "text": "ÇİM= | KUM= YAMAK 1,2,3 (( HANDİKAPLAR 100 PUANLI 4 ,6 HANDİKAPLI İSE ))(( 48,49 HANDİKAP YAMAK 2 DE )) 1,3,4,5,7 HANDİKAPLI ATLAR KAZANIR((( AZ ATLARDA FOVORİ VE 2,8,NUMARALI ATLAR MUTLAKA YAZILMALIDIR))) Favori şanslı yoksa Süpriz | Genelde sürpriz en az plase ise puanla ve handikapla birlikte..20, 39, 48,49,51 handikaplı 4 YAŞINDAKİ    ((( dişilerde 58,5 kg 1,2,3 hanikaplI ))) 3 tane buçuklu varsa fovori 45 HANDİKAP ENSON ŞARTLI 5 KOŞAN                                           2,5,6,8,9 NUMARALI ATLAR KAZANIR YAMAK 3 TE 4 DÜNÇÜ ve 7 çi  HANDİKAP yaş olarak 4 yaştakiler"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır HANDİKAP 15", "text": "ÇİM=EN ALTTAKİ HAFİF KG EN ÜSTTEKİ ATLARLA 2 Lİ BİTER\n\n20-35-40-42-55-66 bülten puan beygir com 1600 çim | KUM=2 Çİ AT SR 1400\nEN HAFİF KG LI 1,2 NUMARALI ATLAR 2Lİ YAPAR Türkiye puanına göre ilk 7 at | ((((( 8 VE 9,10   ATTA FOVORİ KAZANIR 1 HANDİKAP DAHİL  2 ve 8 numaralar İÇİNDE GEÇER))) ÖZELLİKLE HANDİKAP 1,3,4,5,6 ATLAR ARASINDA    GEÇER  5 yaş at kazanır                       YAMAK 2 DE 2 VE 7 HANDİKAPLI ATLAR EN HAFİF BOMBA SONLARDAN GERİYE DOGRUPUANLI HAFİF KG 5 YAŞ DİŞİLERDE VEYA YAMAKLARDA 2 DE 2,3,4 1 VE 3 TE...4.at..içerisinde biter 1 Çİ AT SIRALAMADA  1900 KUM"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır HANDİKAP 16", "text": "ÇİM=DİŞİLERDE TÜRKİYE GENEL PUANI 3 AT ARASINDA GEÇER KOŞAN AT SAYISININ TAM ORTASINDAKİ 3 ATTAN BİRİ KAZANIR | KUM=  2 Çİ AT SIRALAMADA 1900 KUM | ((( 1,2,3,4 NUMARALI ATLAR  )))                                  koşan at sayısının tam ortasındaki 3 attan biri kazanır                                               , 4,5 VE 6   YAŞINDAKİ ATLARA DİKKAT      40-42-48-49-50-58-59 HANDİKAPLAR 4 YAŞINDAKLER"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır HANDİKAP 17", "text": "ÇİM=ÖZELLİKLE 6,7,8,9 NUMARALI ATLAR % 85 EN ALT VE EN ÜSTTEKİ AT % 15 ŞANSLIDIR | KUM= 5,6,7,8,9NUMARALI ATLAR   plase | 5,6,7,8,9 NUMARLAR HANDİKAP 2,3,5 | 2200 çim"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır AÇIK GR 1", "text": "ÇİM=genelde fovorisi kazanır | KUM= Favori kazanır. | genel olarak fovori yıkılırsa 58 kg YAŞI YÜKSEK İLE DÜŞÜK ATI İHMAL ETME"}, {"key": "AGIR KG yaşlılar %70 GENÇLER  %30 şanslıdır AÇIK GR 2", "text": "ÇİM= | KUM="}, {"key": "3 YAŞLI ARAPLAR AÇIK GR 3", "text": "ÇİM=handikap yüksek yaşı yüksek at kazanır | KUM= başlangıç  59,5 KG LRDA 4 HANDİKAPLI SÜPRİZ 5 yaşındaki at kazanır                                         59 kg lar başlangıç 4 yaşındaki handikap 2 çi 58kg at kazanır | 3 yaşlı araplar şartlı 1\nÇİM=1,2 ATLAR ÇOK ŞANSLI\nKUM= % 80 İLK YÜKSEK PUANLI ATTLAR HANDİKAP VE PUAN BİRLİKTE GANYAN SIRALAMASI İLK 4 AT DIŞINA ÇIKMAZ\n1 11 (%22,75)\n2 4 (%18,54)\n3 2 (%11,51)\n4 7 (%11,05)\n5 5 (%9,28)\n6 10 (%9,15)\n7 3 (%5,23)\n8 8 (%4,33)\n9 6 (%3,68)\n10 1 (%2,31)\n11 9 (%2,16)Harış hayatına şartlı koşuyla başlayacak olan arap atlarının zorlu koşusu her ihtimale açık\n\n\n3 yaşlı araplar şartlı 2\nÇİM=FOVORİ PLASE ATLARIN DIŞIna çıkarsa bomba 90 puanın altı ve üstünü yaz\nKUM= YÜKSEK PUANLI VE HANDİKAPLI 3 AT DIŞINA ÇIKMAZ\nFovari gelmeyebilir süpriz bitebilir imkanlarınız ölçüsünde çok at yazmakta fayda var\n\n\n3 yaşlı araplar şartlı 3\nÇİM=ÇOK SÜPRİZ BİTER 1,handikap 56 kg plase 5,6,7 ATLAR % 85 ŞANSLI\nKUM= PLASELER % 80 KAZANIR % 20 DÜŞÜK PUANLI ATLAR KAZANIR\nFovari at geçilmez banko\n\n\n3 yaşlı araplar şartlı4\nÇİM= GENELDE FOVORİ PLASELER ATLARIN DIŞINA ÇIKMAZ\nKUM=(((( DİŞİLERDE GENELDE FOVORİ VE EN DÜŞÜK HANDİKAPLISI ARASINDA BİTER ))) ERKEKLERDE 3 ATTAN yüksek HANDİKAP BİRİ KAZANIR\nFovari atların kazanma şansı çok yüksek 57 kg atlara dikkat\n\n\n3 yaşlı araplar şartlı 5\nÇİM=GENELDE FOVORİ PLASELERİN DIŞINA ÇIKMAZ\nKUM= HANDİKAP PUANLI ORTADAKİ ATLAR % 80 % 20 1,2 ATLAR KAZANIR HANDİKAPLARI SIRAYA DİZ VE GÖBEKTEKİ HANDİKAPIİLK 3 HANDİKAP ÇIKARSA AYNI HANDİKAPLARI YAZ\nFovari gelmeyebilir 2-3 atlar yada süpriz biter fovari belirgin ise tek atabilirsiniz\n\n3 YAŞLI ARAPLAR ŞARTLI 11\nÇİM=1,2 AT KAZANIR\nKUM= GENELDE 3 AT DIŞINA ÇIKMAZ\n\n3 yaşlı araplar handikap 13\nÇİM=HER ZAMAN HAFİF KG ATLAR 5,6,7 ATLAR GELİR\nKUM= DAİMA SÜPRİZ BİTER AĞIR KG LI ATLARA (((( DİKKAT FOVORİ HAFİF KG SA GELİR TEK ATINIZ )))\nHer ihtimale açık bir koşu süpriz ihtimali yüksek ağır kg 1-2-3 atlar kazanabilir hafif kg süpr.at.dikkat\n\n\n3 yaşlı araplar handikap 14\nÇİM=48-50 KG ATLAR % 75 KAZANIR\nKUM=AĞIR KG LILAR % 80 ŞANSLIDIR % 20 ÇOK SÜPRİZ BİTER\nHer ihtimale açık bir koşu %60 1-2-3 atlar şanslı hafif kg atlara dikkat çok süpriz bitebilir\n\n3 yaşlı araplar handikap 15\nÇİM=7,8,9,10 NUMARLI ATLAR % 85 KAZANIRN\nKUM= NUMARA SIRALAMASINDAKİ ORTADAKİ 3 ATA DİKKAT EDİNİZ SÜPRİZ BİTER\nÇok zor bir koşu ağır kg fovari atların gelme şansı çok az 50 kg altı süpriz biter %30 1-2-3 atlar\n\n\n3 yaşlı araplar handikap 16\nÇİM=50 KG VE ALTINDAKİ ATLAR GELİR BOMBALAR PATLAR\nKUM= FOVORİ PLASELER ŞANSLI\nHafif kg atların kazanma şansı daha yüksek süpriz yada fovari %60 1-2-3 şanslı %40 süpriz\n\n\n3 Yaşlı araplar handikap 17\nÇİM=AĞIR KG LI AT % 60 KAZANIR % 40 SÜPRİZ BİTER\nKUM= 55 KG VE ALTI ÇOK SÜPRİZ BİTER\nGenelde fovari geçilmez 1-2-3 şanslı yada nadiren hafif kg. sürpriz\n\n\n3 yaşlı araplar kv 6\nÇİM=İLK YÜKSEK 3 PUANLI AT KAZANIR\nKUM=% 70 FOVORİ % 30 50 KG CİVARI ATLAR KAZANIR\n%80 1-2 atların dışına çıkmaz %20 süpriz bitebilir\n\n\n3 yaşlı araplar kv 7\n\nçimde fovori kazanır hafif kg sa gelir\nÇİM=ERKEK =2,3,4 ATLAR GELİR\nÇİM=DİŞİ =1,2 ATLAR GELİR\nKUM=DİŞİ=2,3,4 HANDİKAPLAR\nKUM=ERKEK=1,2,3 FOVORİ PLASELER DIŞINA ÇIKMAZ\n1-2 atın dışına çıkmaz nadiren süprizde bitebilir %20 şans\n\n\n3 yaşlı araplar kv 8\nÇİM=İLK 2 ATIN ARASINDA BİTER handikapı yüksek\nKUM= % 90 İLK 3 AT ARASINDA BİTER\n1-2-3 dışına çıkmaz fovarinin kazanma şansı daha yüksek bankoysa tek\n\n3 yaşlı araplar kv 9\nÇim= 3,4,5 % 85 1,2 % 15 HANDİKAPLI ATLAR KAZANIR\nKum= % 70 2,3 HANDİKAPLI ATLAR % 30 50 KG CİVARINDAKİ ATLAR\n\n\n3 yaşlı araplar kv 21\nÇİM=HANDİKAP PUANI YÜKSEK 2 AT ARASINDA BİTER\nKUM= 56 KG CİVARINDAKİ İLK 3 AT ÇOK ŞANSLI\nFovarinin kazanma şansı %40 süpriz ihtimali yüksek ağır kg belirgin fovari gelebilir\n\n\n3 yaşlı araplar kv 22\nÇİM=ÖZELLİKLE 3,4 ATLAR ŞANSLI\nKUM= 54,56, KG PLASELER VARSA ŞANSLI YOKSA ÇOK SÜPRİZ BİTER\nGenelde 1-2 atlar şanslı ama hafif kg süprizde gelebilir\n\n3 yaşlı araplar kv 23\nÇİM=HAFİF KG LI HANDİKAPI YÜKSEK ATLAR SÜPRİZ YAPAR\nKUM= GENELDE ORTADAKİ ATLAR ŞANSLI 1,2 ATLARIN ŞANSI AZ\nFovari kazanır %90 şanssı var %10 sürpriz\n\n3 YAŞLI ARAPLAR KV 24\nÇİM=GENEL PUANI YÜKSEK 2 ATIN DIŞINA ÇIKMAZ\nKUM=1,2 ATLAR KAZANIR\n\n3 YAŞLI ARAPLAR KV 25\nÇİM=FOVORİ HAFİF KG İSE KAZANIR DEGİLSE BOMBALAR PATLAR\nKUM=56 KG CİVARINDAKİ FOVORİ VARSA ŞANSLI YOKSA SÜPRİZ BİTER\n\n3 YAŞLI ARAPLAR KV 26\nÇİM=KESİNLİKLE HAFİF KG LI ATLAR 5,6,7 ATLAR GELİR\nKUM= KESİNLİKLE 3 AT KAZANIR HANDİKAP YÜKSEK\n\n3 yaşlı araplar açık\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ\nKUM= 1,2.3 ATLAR KAZANIR\n1-2 atların dışına çıkmaz ama imkanlarınaz ölçüsünde tuttuğunuz süpriz atları yazın\n\n\n3 YAŞLI ARAPLAR AÇIK GR 1\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ\n3 YAŞLI ARAPLAR AÇIK GR 2\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DILINA ÇIKMAZ\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ\n3 YAŞLI ARAPLAR GR3\nÇİM=HANDİKAP İLK 3 AT DIŞINA ÇIKMAZ en yüksek handikapın üstünü yaz bombası dır\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ 1,2,4 ÇÜ HANDİKAPLAR ARASINDA GEÇER VE 2 NUMARALI AT ÇIKIŞI 7 VE 9 NUMARALI AT ÇIKIŞI 8 İSE YAZILMALIDIR ÇOK BOMBASI FOVORİNİN ÜSTÜNÜ YAZILMALIDIR EĞER BOMBA OLURSA\n\n3 yaşlı araplar MAIDEN\nÇİM=dişide handikapı 1,2 çi atlar ve fovori kazanır çok at yazmakta fayda var\nKUM= genelde dhöw de fovori kazanır ((( ÇOK NADİR GELEBİLİR handikapı 45 olan gelmez yazma (( AGIRLIKLI DİŞİ VARSA PLASELER GELİR 54,5 KG DİKKAT GENELDE KAZANIR ))\nYarış hayatına başlıyacak olan tayların zor koşusu her ihtimale açık | 3 YAŞLI ARAPLAR | 3 yaşlı araplar şartlı 1\nÇİM=1,2 ATLAR ÇOK ŞANSLI | KUM= % 80 İLK YÜKSEK PUANLI ATTLAR HANDİKAP VE PUAN BİRLİKTE GANYAN SIRALAMASI İLK 4 AT DIŞINA ÇIKMAZ | Yarış hayatına şartlı koşuyla başlayacak olan arap atlarının zorlu koşusu her ihtimale açık\nŞartlı1:1.2 taylar. | 3 yaşlı araplar şartlı 2\nÇİM=FOVORİ PLASE ATLARIN DIŞIna çıkarsa bomba 90 puanın altı ve üstünü yaz ALTI ÜSTÜ AYNI YERLERDEYSE sıralama bülten üst üstte 100 ,95,90 PUANSA 85 PUANLISI GELİR HANDİKAPI YÜKSEK OLAN AYNI HANDİKAPLAR ARASINDA GEÇER ve derece de koşu mesafesinde derecesi iyi olan at kazanır 52-53,5 KG 4,5 STARTLI ATLAR KAZANIR | KUM= 54 handikap 56 handikaplılar kazanır 20- 40- 43- 51 handikaplı süpriz 1200 kum da | Fovari gelmeyebilir süpriz bitebilir imkanlarınız ölçüsünde çok at yazmakta fayda var\nŞartlı3:1.2 taylar. | 3 yaşlı araplar şartlı 3\nÇİM=ÇOK SÜPRİZ BİTER 1,handikap 56 kg plase 5,6,7 numaralı ATLAR % 85 ŞANSLI | KUM= PLASELER % 80 KAZANIR % 20 DÜŞÜK PUANLI ATLAR KAZANIR 1-2-4 STARTLI FOVORİ PLASELER | Fovari at geçilmez banko fotomaç fovori\nŞartlı4:favori gelmez fanatik .2.3.4 taylar.bil.puanı 49 olan. | 3 yaşlı araplar şartlı4\nÇİM= GENELDE FOVORİ PLASELER ATLARIN DIŞINA ÇIKMAZ | KUM=(((( DİŞİLERDE GENELDE FOVORİ VE EN DÜŞÜK HANDİKAPLISI ARASINDA BİTER )))  ERKEKLERDE 3 ATTAN yüksek HANDİKAP BİRİ KAZANIR   52....HANDİKAP..KAZANIR | Fovari atların kazanma şansı çok yüksek 57 kg atlara dikkat | 3 yaşlı araplar şartlı 5\nÇİM=GENELDE FOVORİ PLASELERİN DIŞINA ÇIKMAZ | KUM= HANDİKAP PUANLI ORTADAKİ ATLAR % 80                                    (((( % 20 1,2  Çİ HANDİKAPLISI\nKV..AÇIK..KOŞULARDA ..2VE  3PLASEDEKİ  ORTALAMA PUANI PLASE AT KAZANIR BEYGİR COM DAN BAKABİLİRSİNİZ \n\nKAZANIR FOVORİ plase İSE DİKKAT ))))                                                             HANDİKAPLARI SIRAYA DİZ VE GÖBEKTEKİ HANDİKAPIİLK 3 HANDİKAP ÇIKARSA AYNI HANDİKAPLARI YAZ | Fovari gelmeyebilir 2-3 atlar yada süpriz biter fovari belirgin ise tek atabilirsiniz\nŞartlı5:favori.fotomaç ve fanatikte aynı ise tek"}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR ŞARTLI 11", "text": "ÇİM=1,2 AT KAZANIR | KUM= GENELDE 3 AT DIŞINA ÇIKMAZ | 3 yaşlı araplar handikap 13\nÇİM=HER ZAMAN HAFİF KG ATLAR 5,6,7 ATLAR GELİR | KUM= DAİMA SÜPRİZ BİTER AĞIR KG LI ATLARA (((( DİKKAT FOVORİ HAFİF KG SA GELİR TEK ATINIZ ))) | Her ihtimale açık bir koşu süpriz ihtimali yüksek ağır kg 1-2-3 atlar kazanabilir hafif kg süpr.at.dikkat\nHan13.hand yüksek 123 at. | 3 yaşlı araplar handikap 14\nÇİM= AĞIR KG LILAR % 80 ŞANSLIDIR UZUN MESAFEDE   )))              %20   KISA MESAFEDE 47,48,49 HANDİKAPLAR GELİR ÇOK SÜPRİZ BİTER TGP 1 AT 300 ÜSTÜ PUANSA % 90 KAZANIR | KUM=48-50 KG ATLAR % 75 KAZANIR | Her ihtimale açık bir koşu %60 1-2-3 atlar şanslı hafif kg atlara dikkat çok süpriz bitebilir | 3 yaşlı araplar handikap 15\nÇİM=7,8,9,10 NUMARLI ATLAR % 85 KAZANIR | KUM= NUMARA SIRALAMASINDAKİ ORTADAKİ 3 ATA DİKKAT EDİNİZ SÜPRİZ BİTER  7,8,9,10 NUMARLI ATLAR % 85 KAZANIR | Çok zor bir koşu ağır kg fovari atların gelme şansı çok az 50 kg altı süpriz biter %30 1-2-3 atlar | Hand 15:pahalı yarışlarda ağır kilo57 -60kg | Ucuz yarışlarda hafif kilo | 3 yaşlı araplar handikap 16\nÇİM=50 KG VE ALTINDAKİ ATLAR GELİR BOMBALAR PATLAR | KUM= FOVORİ PLASELER ŞANSLI | Hafif kg atların kazanma şansı daha yüksek süpriz yada fovari %60 1-2-3 şanslı %40 süpriz\nHand 16 :süpriz. | 3 Yaşlı araplar handikap 17\nÇİM=AĞIR KG LI AT % 60 KAZANIR % 40 SÜPRİZ BİTER | KUM= 55 KG VE ALTI ÇOK SÜPRİZ BİTER | Genelde fovari geçilmez 1-2-3 şanslı yada nadiren hafif kg. sürpriz\nHand 17:2 at veya haif kilo favori. | 3 yaşlı araplar kv 6\nÇİM=İLK YÜKSEK 3 PUANLI AT KAZANIR ((( DİŞİLERDE FOVORİ VE HANDİKAP 1,2 KAZANIR ))) | KUM=% 70 FOVORİ % 30 ilk 5 at içerisinde fotomaç | %80 1-2 atların dışına çıkmaz %20 ilk 5 at içerisinde geçer fotomaç \nKv6.genelde fvr.%30 spriz. | 3 yaşlı araplar kv 7"}, {"key": "3 yaşlı araplar kv 7 çimde fovori kazanır hafif kg sa gelir YADA 2Çİ PUANLI AT GELİR", "text": "ÇİM=ERKEK =2,3,4,5 HANDİKAPLI PLASEDE GELEBİLİR  ATLAR GELİR | ÇİM=DİŞİ =1,2 ATLAR GELİR | KUM=DİŞİ=2,3,4 HANDİKAPLAR | KUM=ERKEK=1,2,3 FOVORİ PLASELER DIŞINA ÇIKMAZ | 1-2 atın dışına çıkmaz nadiren süprizde bitebilir %20 şans | Kv7:sürd gelmez.2.3 atlar. | 3 yaşlı araplar kv 8\nÇİM=İLK 2 ATIN ARASINDA BİTER handikapı yüksek | KUM= % 90 İLK 3 AT ARASINDA BİTER | 1-2-3 dışına çıkmaz fovarinin kazanma şansı daha yüksek bankoysa tek | Kv8 :favori."}, {"key": "3 yaşlı araplar kv 7 3 yaşlı araplar kv 9", "text": "Çim= 3,4,5 % 85 1,2 % 15 HANDİKAPLI ATLAR KAZANIR | Kum= % 70 2,3 HANDİKAPLI ATLAR % 30 50 KG CİVARINDAKİ ATLAR | 3 yaşlı araplar kv 21\nÇİM=HANDİKAP PUANI YÜKSEK 2 AT ARASINDA BİTER | KUM= 56 KG CİVARINDAKİ İLK 3 AT ÇOK ŞANSLI | Fovarinin kazanma şansı %40 süpriz ihtimali yüksek ağır kg belirgin fovari gelebilir | 3 yaşlı araplar kv 22\nÇİM=ÖZELLİKLE 3,4 ATLAR ŞANSLI | KUM= 54,56, KG PLASELER VARSA ŞANSLI YOKSA ÇOK SÜPRİZ BİTER | Genelde 1-2 atlar şanslı ama hafif kg süprizde gelebilir | Kv22:hafif kilo plase atlar. | 3 yaşlı araplar kv 23\nÇİM=HAFİF KG LI HANDİKAPI YÜKSEK ATLAR SÜPRİZ YAPAR | KUM= GENELDE ORTADAKİ ATLAR ŞANSLI 1,2 ATLARIN ŞANSI AZ | Fovari kazanır %90 şanssı var %10 sürpriz | Kv23:plase atlar şanslıdır."}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR KV 24", "text": "ÇİM=GENEL PUANI YÜKSEK 2 ATIN DIŞINA ÇIKMAZ | KUM=1,2 ATLAR KAZANIR"}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR KV 25", "text": "ÇİM=FOVORİ HAFİF KG İSE KAZANIR DEGİLSE BOMBALAR PATLAR | KUM=56 KG CİVARINDAKİ FOVORİ VARSA ŞANSLI YOKSA SÜPRİZ BİTER"}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR KV 26", "text": "ÇİM=KESİNLİKLE HAFİF KG LI ATLAR 5,6,7 ATLAR GELİR | KUM= KESİNLİKLE 3 AT KAZANIR HANDİKAP YÜKSEK | 3 yaşlı araplar açık\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ | KUM= 1,2.3 ATLAR KAZANIR | 1-2 atların dışına çıkmaz ama imkanlarınaz ölçüsünde tuttuğunuz süpriz atları yazın"}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR AÇIK GR 1", "text": "ÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ | KUM= İLK 3 ATIN DIŞINA ÇIKMAZ"}, {"key": "3 yaşlı araplar kv 7 3 YAŞLI ARAPLAR AÇIK GR 2", "text": "ÇİM=HANDİKAP PUANI YÜKSEK 3 AT DILINA ÇIKMAZ | KUM= İLK 3 ATIN DIŞINA ÇIKMAZ"}, {"key": "4 YUKARI ARAPLAR 3 YAŞLI ARAPLAR GR3", "text": "ÇİM=HANDİKAP İLK 3 AT DIŞINA ÇIKMAZ  en yüksek handikapın üstünü yaz bombası dır | KUM= İLK 3 ATIN DIŞINA ÇIKMAZ 1,2,4 ÇÜ HANDİKAPLAR ARASINDA GEÇER VE 2 NUMARALI AT ÇIKIŞI 7 VE 9 NUMARALI AT ÇIKIŞI 8 İSE YAZILMALIDIR ÇOK BOMBASI FOVORİNİN ÜSTÜNÜ YAZILMALIDIR EĞER BOMBA OLURSA | Açık:favori veya 2 atlar. | 3 yaşlı araplar MAIDEN\nÇİM=r DİŞİLERDE 1,2,3 HANDİKAPLI FOVORİ PLASELER | KUM= genelde dhöw de fovori kazanır ((( ÇOK NADİR GELEBİLİR handikapı 45 olan gelmez yazma (( AGIRLIKLI DİŞİ VARSA PLASELER GELİR 54,5 KG DİKKAT GENELDE KAZANIR )) | Yarış hayatına başlıyacak olan tayların zor koşusu her ihtimale açık | 800 çim | 1000 kum | 1100 kum | Maiden:%85-123at%15 spriz.\nÇİM –KUM Koşu İstatistikleri\n30 Kasım 2012 — bayganyan\nARAPLAR\n3 -4 Yaş Araplar:\nŞartlı – 1———-: Normal istatistiklerde genelde favori kazanır yazın bu koşularda çoğunlukla sürpriz gelmektedir.Maiden koşular gibi bu tip koşularda da tayların orjin, çalışma, jokey v.b durumlarına bakarak yazmakta fayda var.\nŞartlı – 2———-: Sürpriz biter..3,4,5,6.. atlar.\nKUM—————-: Genellikle 2.3.4 ncü atlar gelir.\nŞartlı – 3———-: Favori+plase\nKUM—————-: Favoriler arasında geçer.\nŞartlı – 4———-: Genellikle 2.3.4 ncü atlar gelir, favorinin geldiği çok azdır.\nKUM—————: 2.3.4. atlar gelir.\nŞartlı – 5 ———: Favoriler arasında geçer\nKUM—————-: 2,3 ,4 ncü atlar arasında geçer.\nKV-6 —————: 10 yarışın 5 i favori, 3 ü plase, 2 si sürpriz biter..\nKV-7 —————: Türkiye puanına göre 2.3.4. atlar şanslıdır\nKV-8—————-: Favori bitmesi büyük ihtimal, sürpriz az olur.\nKV-9 —————: Plase atlar arasında geçer..\nKV-21 ————-: Favori gelmez, plase ve sürpriz atlar gelir.\nKV-22 ————-: Sürpriz biter, bombalar patlar\nKV-23 ————-: Türkiye puanına göre 3.4.at şanslıdır.\nKV-24 ————-: Favori+plase\nHandikap-14—-: Favori hariç tüm atların şansı var, genelde 2.3.4. atlar..\nKUM—————-: Genelde favoriler arasında geçer ilk 4 dışına pek çıkmaz.\nHandikap-15—-: Genellikle ilk 4 at dışına çıkmaz, ağır kg. li atların şansı çoktur.\nKUM—————-: Hafif kilolu 1. ve 2. atlar kazanır.\nHandikap-16—-: Genelde sürpriz biter..\nHandikap 17 Favori hafif kilo ise kazanır. Yoksa T.Puanına göre ilk beş at da gelebilir.\nAçık/ 1,2,3 Koşular: Kupalı ve açık koşularda bence ata değil jokeye oynarsanız kazanma yüzdeniz artar.. | 4 YUKARI ARAPLAR | ŞARTLI 2"}, {"key": "4 YUKARI ARAPLAR YAMAK / 2    ((( 57,5   5 YAŞINDA ))", "text": "ÇİM = bastan 1,2 sondan 1,2 handikaplar arasında geçer kesinlikle | KUM=PLASELER % 80    % 20 ÇOK SÜPRİZ     1,2,3 HANDİKAP ((( 59,5   5 YAŞINDA FOVORİ ))) (( 53 KG 5 YAŞINDA ))) (( 53 KG 6 YAŞINDA FOVORİ ))"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 3", "text": "ÇİM = GENEL İLK 3 AT DIŞINA ÇIKMAZ agır kg da kendi çalıştırangaloptaki ata dikkat 6 yaşındaki fovori ise gelir (( 51 KG 5 YAŞINDA FOVORİ )) | Çim yamak /3= 1,2,3 handikap arasında geçer | KUM= YÜKSEK PUANLI İLK 3 AT % 85 KAZANI   (( 56,5   6 YAŞINDA FOVORİ )(( 58,5 KG 6 YAŞINDA))))(( 58,5 KG 6 YAŞINDA )) ((( 56,5 KG 8 YAŞINDA PLASE ))(( 50,5 KG 5 YAŞINDA ))(( 58 KG 7 YAŞINDA ))(( 59,5 KG 6 YAŞINDA )))"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 4", "text": "ÇİM=EN YÜKSEK PUANLI VE HANDİKAP PUANI YÜKSEK İLK 3 AT ŞANSLI((( 60 KG 5 YAŞINDA        (( 56 KG 5 YAŞINDA ))) (( 51 KG 7 YAŞINDA )) (( 58,5 KG 5 YAŞINDA )) (( 58,5 KG 7 YAŞINDA )) | KUM= HANDİKAP 1,2,3,5 PLASE ATI İHMAL ETME   YÜKSEK PUANLA BİRLİKTE 60 KG VE 60 KG LAR ARASINDA AT VARSA YAZINIZ KAZANMA ŞANSI VAR 57,5 VE 59,5 KG ARASINDA Kİ ATLARIDA YAZINIZ VARSA ((( 56 KG 7 YAŞINDA ))"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 5", "text": "ÇİM= İLK 3 ATIN DIŞINA ÇIKMAZ  handikapı yüksek hafif kg sa gelir YOKSA   HAFİF KG YÜKSEK YAŞLI AT GELİR )))) ((( 55,5 KG 5 YAŞINDA FOVORİ KAZANIR ))) 61,5 5 YAŞINDA PLASE ))) (( 56 KG 5 YAŞINDA FOVORİ )) | KUM= 58 KG ALTINDA HANDİKAP YÜKSEK ATLAR KAZANIR 1,2,3,5 HANDİKAPLAR 60,5 KG 9 YAŞINDAKİ AT KAZANIR 54,5 KG 5 YAŞINDAKİ AT KAZANIR((( 58 kg 6 yaşında )) 56 KG 7 YAŞINDA ))) (( 55,5 KG 10 YAŞINDA )))(( 56,5 KG 8 YAŞINDA )) (( 60 KG 5 YAŞINDA )))(( 55,5 KG 6 YAŞINDA ))"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 11", "text": "ÇİM =KESİN FOVORİ VARSA ŞANSLI YOKSA 3,4 ATLAR KAZANIR | KUM= İLK 2 ATIN ŞANSI ÇOK"}, {"key": "4 YUKARI ARAPLAR KV 6", "text": "ÇİM= AGIR KG 2 AT ÇOK ŞANSLI (( 56 KG 6 YAŞINDAKİ AT KAZANIR ))) ((( 63 KG 5 YAŞINDAYSA KAZANIR (( 60 KG 5 YAŞINDA ))(( yüksek YAŞLI ATLAR KAZANIR )) | KUM= PUANLARI YÜKSEK YAŞLI ATLARIN ŞANSI YÜKSEK YAŞLI 2 AT ARASINDA GEÇER 10 YAŞINDA 60,5 KG KAZANIR ((( 58,KG 6 YAŞINDA )) (( 56,5 KG 6 YAŞINDA )))"}, {"key": "4 YUKARI ARAPLAR KV 7", "text": "ÇİM= GENEL PUANI YÜKSEK İLK 2 AT ARASINDA BİTER100 ve 95 puanlar (( 58 KG 5 YAŞINDA )))(( 58,5 6 YAŞINDA ))) 56,5   7 yaşında | KUM= İLK 3 ATIN DIŞINA ÇIKMAZ 1,2,3 HANDİKAPLAR   6 Yaşında 3 tane at varsa 3 çü handikaplı olan kazanır yoksa 5 yaşındaki fovori kazanır 125 handikap gelmez dikkat et 7 TANE AT KOŞAN YERDE 6 NUMARALI AT FOVORİ İSE KAZANIR"}, {"key": "4 YUKARI ARAPLAR KV 8", "text": "ÇİM= PLASELER KAZANIR | KUM=58 KG ve 58,5 kg  ALTINDAKİ YÜKSEK PUANLI ATLAR KAZANIR   6 YAŞINDAKİLER FAZLA KAZANIYOR  ((( 1,2,3,4,6 HANDİKAPA KADAR GELİR DİKKAT )))"}, {"key": "4 YUKARI ARAPLAR KV 9", "text": "ÇİM= İLK 4 YÜKSEK PUANLI AT KAZANIR | KUM= FOVORİNİN ŞANSI AZ 3,4,5 PUANA SAHİP ATLAR %75 KAZANIR (( 60 KG 5 YAŞINDA SÜPRİZ )))"}, {"key": "4 YUKARI ARAPLAR KV 21", "text": "ÇİM= İLK 2 YÜKSEK HANDİKAP PUANLI AT KAZANIR 6 YAŞ DAHA ŞANSLIDIR (( 59,5 KG 6 YAŞINDA )) | KUM= PLASELER ÇOK ŞANSLI % 20 ((( 50 KG CİVARI ATLAR KAZANIR 50 KG 5 YAŞINDAKİ AT KAZANIR )))"}, {"key": "4 YUKARI ARAPLAR KV 22", "text": "ÇİM= ÖZELLİKLE 3,4 ATLAR ŞANSLI % 15 SÜPRİZ BİTER (( 5 numaralı at 2 den çıkarsa gelir )) | KUM= 54 KİLOLU ATLARA DİKKAT % 80 SÜPRİZ BİTER 50 kg plase atlar kazanır"}, {"key": "4 YUKARI ARAPLAR KV 23", "text": "ÇİM= HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ | KUM= İLK 3 AT DIŞINA ÇIKMAZ"}, {"key": "4 YUKARI ARAPLAR KV 24", "text": "ÇİM= 1,2 ATLAR KAZANIR | KUM= YÜKSEK PUANLI YAŞLI ATLAR ÇOK ŞANSLI"}, {"key": "4 YUKARI ARAPLAR KV 25", "text": "ÇİM= FOVORİ AĞIR KG SA GELMEZ BOMBALAR PATLAR | KUM= FOVORİ ŞANSLI YOKSA SÜPRİZ BİTER"}, {"key": "4 YUKARI ARAPLAR KV 26", "text": "ÇİM= KESİNLİKLE SÜPRİZ BİTER 4,5,6 PUANLI ATLARA DİKKAT | KUM= İLK 2 ATIN DIŞINA ÇIKMAZ | HANDİKAP 13 | TR KUM= YAMAK 3   ((( 54,5   7 YAŞINDA )) | ÇİM= GENELDE İLK 4 ATIN DIŞINA ÇIKMAZ | KUM= ÇOK SÜPRİZ BİTER HAFİF KG LAR 61 KG 8 YAŞINDAKİ AT KAZANIR (( 59,5 KG 4 YAŞINDA ))"}, {"key": "4 YUKARI ARAPLAR HANDİKAP 14", "text": "ÇİM= genelde apranti yarışı ise 59,5 kg lar  48 -- 50 KG LI ATLAR İLE 5,6,7,8 ATLARA DİKKAT (((( 59,5 7 YAŞINDA FOVORİ ))))         (( 55 KG 7 YAŞINDA ))) (( 55,5 9 YAŞINDA )))(( 57 KG 6 YAŞINDA )))((( 56 KG 7 YAŞINDA ))) | KUM= 3,4,5,6,7   NUMARALI ARASINDA GEÇER 5 YAŞINDA HANDİKAP 1 DİKKAT (((( 53 KG 5 YAŞINDA )))     56 KG 6 YAŞINDAKİ AT KAZANIR ((( 55,5 5 YAŞINDA ))) | HANDİKAP 15 | Çim dişi=50,58,64,68,71,72 handikaplılar | Yamak 2 =45 handikap | ÇİM = Yamak 3 =57,59,63 handikap | TR KUM= 56KG 6 YAŞINDAKİ AT KAZANIR  55 handikap | ÇİM= 56 KG LI ATLAR % 90 KAZANIR  YOKSA 56 LI HANDİKAPLI VE HANDİKAPI 50 İLA 56 ARASINDAKİ ATLAR GELİR 43,49,52,53,61,63,64,65, | KUM= HAFİF KG LI süpriz agır kg gelmez 4 YAŞINDA FOVORİ İSE KAZANIR (( 56,5 KG 7 YAŞINDAYSA KAZANIR ))) (( 55,5 KG 8 YAŞINDAKİ ATKAZANIR ))) 63 kg 5 yaşında ))(( 61 KG 6 YAŞINDA ))) | YAMAK 3 =53 KG 4 YAŞINDA AT KAZANIR((( 55,5 KG 4 YAŞINDA )) | HANDİKAP 16 | TR KUM= 5 YAŞINDA 52,5 KG KAZANIR | TR ÇİM= 58 KG 6 YAŞINDAKİ AT KAZANIR | ÇİM=4, 8,9,10 NOLU ATLAR KAZANIR SÜPRİZ BİTER   (((( 55,5 KG 7 YAŞINDA )))(( 52,5 5 YAŞINDA)) (( 54,5 KG 8 YAŞINDA ))) (( 50 KG 6 YAŞINDA ))(( 58 KG 5 YAŞINDA )))(( 56 KG 5 YAŞINDA )))(( 58,5 KG 5 YAŞINDA ))) | KUM= GENELDE 6,7,8,9 NOLU ATLAR KAZANIR SÜPRİZ BİTER ((( 54 KG 6 YAŞ ))) (( 59,5 KG 8 YAŞ ))1,2,3 HANDİKAPLAR 4 YAŞINDAKİ ATLAR KAZANIR ((( 50 KG 7 YAŞINDAKİ AT KAZANIR))            ((( 58 KG 4 YAŞINDA ) FOVORİ ))"}, {"key": "4 YUKARI ARAPLAR HANDİKAP 17", "text": "ÇİM= HAFİF KG LI YÜKSEK PUANLI ATLAR KAZANIR (( 58 KG 7, 8 YAŞINDA )) | KUM= PLASELER 50 KG ÇOK ŞANSLI 50 KG 5 YAŞINDAKİ AT KAZANIR (((   54,5 KG 4 YAŞINDA AT KAZANIR ((( 52,5 KG 5 YAŞINDA ))) (( 51 KG   6 YAŞINDA )))"}, {"key": "4 YUKARI ARAPLAR AÇIK GR1", "text": "ÇİM= 1,2, ATIN DIŞINA ÇIKMAZ((( 58 KG 4 YAŞINDA PLASE   ))) (( 57 KG 4 YAŞINDA FOVORİ )) | KUM= 1,2,3 ATIN DIŞINA ÇIKMAZ 6 YAŞINDAKİ AT KAZANIR 1 Çİ HANDİKAP | AÇIK GR 3 KUM= 60,5 6 YAŞINDAKİ AT KAZANIR FOVORİ 59,5 KG 6 YAŞINDAKİ AT KAZANIR | AÇIK = (( 59,5 KG 6 YAŞINDA )))"}, {"key": "4 YUKARI ARAPLAR AÇIK GR 2", "text": "ÇİM = FOVORİ KAZANIR İKRAMİYESİ BÜYÜK YARIŞTA | 4 YUKARI ARAPLAR | ŞARTLI 2"}, {"key": "4 YUKARI ARAPLAR YAMAK / 2    ((( 57,5   5 YAŞINDA ))", "text": "ÇİM = bastan 1,2 sondan 1,2 handikaplar arasında geçer kesinlikle DİŞİLERDE 57 KG LI PLASE HANDİKAPI YÜKSEK AT KAZANIR | KUM=1 Çİ AT SIRALAMADA 2100 KUM\nPLASELER % 80    % 20 ÇOK SÜPRİZ     1,2,3 HANDİKAP ((( 59,5   5 YAŞINDA FOVORİ ))) (( 53 KG 5 YAŞINDA ))) (( 53 KG 6 YAŞINDA FOVORİ )) | Şartlı 2:handikappuanı yüksek at ve favori.performansı -2-3"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 3", "text": "ÇİM = GENEL İLK 3 AT DIŞINA ÇIKMAZ agır kg da kendi çalıştırangaloptaki ata dikkat 6 yaşındaki fovori ise gelir DEĞİLSE HANDİKAP 1 Çİ AT GELİR  (( 51 KG 5 YAŞINDA FOVORİ )) | Çim yamak /3= 1,2,3 handikap arasında geçer | KUM= ORTALAMA..GANYAN.1,2,Çİ..AT.YÜKSEK PUANLI İLK 3 AT % 85 KAZANIR  HANDİKAP 1 SÜPRİZ YAPAR                                                                                                     (( 56,5   6 YAŞINDA FOVORİ )(( 58,5 KG 6 YAŞINDA))))(( 58,5 KG 6 YAŞINDA )) ((( 56,5 KG 8 YAŞINDA PLASE ))(( 50,5 KG 5 YAŞINDA ))(( 58 KG 7 YAŞINDA ))(( 59,5 KG 6 YAŞINDA ))) | Şartlı3:plase ve 3-4 at.han-2-yıllık 2-at.genel puan yük 123at."}, {"key": "4 YUKARI ARAPLAR ŞARTLI 4", "text": "ÇİM=EN YÜKSEK PUANLI VE HANDİKAP PUANI YÜKSEK İLK 3 AT ŞANSLI((( 60 KG 5 YAŞINDA        (( 56 KG 5 YAŞINDA ))) (( 51 KG 7 YAŞINDA )) (( 58,5 KG 5 YAŞINDA )) (( 58,5 KG 7 YAŞINDA )) | KUM=KG ALAN VE  START TOPLAMI  STARTI  ÇIKAN NUMARA  STARTI ÜST VE ALTI \nHANDİKAP 1,2,3,5 PLASE ATI İHMAL ETME   YÜKSEK PUANLAR     BİRLİKTE 60 KG VE 60 KG LAR ARASINDA AT VARSA YAZINIZ KAZANMA ŞANSI VAR 57,5 VE 59,5 KG ARASINDA Kİ ATLARIDA YAZINIZ | Şartlı4: sürd yoksa sürpriz.yıllık 1-2-3 atlar gelir."}, {"key": "4 YUKARI ARAPLAR ŞARTLI 5", "text": "ÇİM= İLK 3 ATIN DIŞINA ÇIKMAZ  handikapı yüksek hafif kg sa gelir YOKSA   HAFİF KG YÜKSEK YAŞLI AT GELİR )))) ((( 55,5 KG 5 YAŞINDA FOVORİ KAZANIR ))) 61,5 5 YAŞINDA PLASE ))) (( 56 KG 5 YAŞINDA FOVORİ )) | KUM= 6 ÇI AT SR 1400\n58 KG ALTINDA HANDİKAP YÜKSEK ATLAR KAZANIR 1,2,3,4,5 HANDİKAPLAR kazancı 2 çi at çok şanslı 321 tl olursa....53...KG...59..HANDİKAPLIDAN..SÜPRİZ.OLUR\n\n3 ÇÜ AT  SIRALAMADA 1400 KUM\n\n1400 kum | Şartlı5:favori"}, {"key": "4 YUKARI ARAPLAR ŞARTLI 11", "text": "ÇİM =KESİN FOVORİ VARSA ŞANSLI YOKSA 3,4 ATLAR KAZANIR | KUM= İLK 3  ATIN ŞANSI ÇOK"}, {"key": "4 YUKARI ARAPLAR KV 6", "text": "ÇİM= AGIR KG 3 AT ÇOK ŞANSLI (( 56 KG 6 YAŞINDAKİ AT KAZANIR ))) ((( 63 KG 5 YAŞINDAYSA KAZANIR (( 60 KG 5 YAŞINDA ))(( yüksek YAŞLI ATLAR KAZANIR )) | KUM= HANDİKAP...1.2PUANLARI YÜKSEK YAŞLI ATLARIN ŞANSI YÜKSEK YAŞLI 2 AT ARASINDA GEÇER 10 YAŞINDA 60,5 KG KAZANIR (((58kg..6 YAŞINDA )) (( 56,5 KG 6 YAŞINDA )))...GANYAN..ORTALAMA...2..Çİ..AT | Kv6.genel puanı yüksek atlar gelir."}, {"key": "4 YUKARI ARAPLAR KV 7", "text": "ÇİM= GENEL PUANI YÜKSEK İLK 3 AT ARASINDA BİTER100 ve 95  90 puanlar (( 58 KG 5 YAŞINDA )))(( 58,5 6 YAŞINDA ))) 56,5   7 yaşında | KUM= 5 yaşında fotomaç fovori ise kazanır İLK 4 HANDİKAP  ATIN DIŞINA ÇIKMAZ 1,2,3.4 HANDİKAPLAR   6 Yaşında 3 tane at varsa 3 çü handikaplı olan kazanır yoksa 5 yaşındaki fovori kazanır 125 handikap gelmez dikkat et 7 TANE AT KOŞAN YERDE 6 NUMARALI AT FOVORİ İSE KAZANIR | Kv7yıllık 1 at.gp 12 at."}, {"key": "4 YUKARI ARAPLAR KV 8", "text": "ÇİM=\n\n1600-çim\nÇİM= 58--kg--116--9-,,,,\nÇİM= 59--kg--106--6-,,,,,\nÇİM= 59,5--kg--107--4-start\nÇİM= 60--kg--91--5-start\nÇİM= 60--kg--126-5-start\nÇİM= 60--kg--133-5-start\nÇİM= 60--kg--101--6-start\nÇİM= 60--kg--110--6-start\nÇİM= 60--kg--109--2-start\nÇİM= 60--kg--113--7-start\nÇİM= 60--kg--125--12-start\nÇİM= 61--kg--127--6-start\nÇİM= 61--kg--106--2-start\nÇİM= 62--kg--121--9-,,,,\nÇİM= 63--kg--129--2-,,,\n\n\n\n\n\nPLASELER KAZANIR | KUM=58 KG ve 58,5 kg  ALTINDAKİ YÜKSEK PUANLI ATLAR KAZANIR   6 YAŞINDAKİLER FAZLA KAZANIYOR  ((( 1,2,3,4,6 HANDİKAPA KADAR GELİR DİKKAT ))).7..yasındaki..at..kazanır2200..kum | kv8-yıllık 1 at tek."}, {"key": "4 YUKARI ARAPLAR KV 9", "text": "ÇİM= İLK 4 YÜKSEK PUANLI AT KAZANIR | KUM= FOVORİNİN ŞANSI AZ 3,4,5 PUANA SAHİP ATLAR %75 KAZANIR (( 60 KG 5 YAŞINDA SÜPRİZ )))"}, {"key": "4 YUKARI ARAPLAR KV 21", "text": "ÇİM= İLK 2 YÜKSEK HANDİKAP PUANLI AT KAZANIR 6 YAŞ DAHA ŞANSLIDIR (( 59,5 KG 6 YAŞINDA )) | KUM= PLASELER ÇOK ŞANSLI % 20 ((( 50 KG CİVARI ATLAR KAZANIR 50 KG 5 YAŞINDAKİ AT KAZANIR ))) | Kv21.spriz."}, {"key": "4 YUKARI ARAPLAR KV 22", "text": "ÇİM= ÖZELLİKLE 3,4 ATLAR ŞANSLI % 15 SÜPRİZ BİTER (( 5 numaralı at 2 den çıkarsa gelir )) | KUM= 54 KİLOLU ATLARA DİKKAT % 80 SÜPRİZ BİTER 50 kg plase atlar kazanır | Kv22.gp12at"}, {"key": "4 YUKARI ARAPLAR KV 23", "text": "ÇİM= HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ | KUM= İLK 3 AT DIŞINA ÇIKMAZ"}, {"key": "4 YUKARI ARAPLAR KV 24", "text": "ÇİM= 1,2 ATLAR KAZANIR | KUM= YÜKSEK PUANLI YAŞLI ATLAR ÇOK ŞANSLI"}, {"key": "4 YUKARI ARAPLAR KV 25", "text": "ÇİM= FOVORİ AĞIR KG SA GELMEZ BOMBALAR PATLAR | KUM= FOVORİ ŞANSLI YOKSA SÜPRİZ BİTER"}, {"key": "4 YUKARI ARAPLAR KV 26", "text": "ÇİM= KESİNLİKLE SÜPRİZ BİTER 4,5,6 PUANLI ATLARA DİKKAT | KUM= İLK 2 ATIN DIŞINA ÇIKMAZ | Hand 11: favori. | Hand 12:1.2.3 taylar. | HANDİKAP 13 | TR KUM= YAMAK 3   ((( 54,5   7 YAŞINDA )) | ÇİM= GENELDE İLK 4 ATIN DIŞINA ÇIKMAZ | KUM= ÇOK SÜPRİZ BİTER HAFİF KG LAR 61 KG 8 YAŞINDAKİ AT KAZANIR (( 59,5 KG 4 YAŞINDA )) | Hand 13:ilk 5 at arasında.en iyiçalışmış olan at.galopta ve sprintte"}, {"key": "4 YUKARI ARAPLAR HANDİKAP 14", "text": "ÇİM= genelde apranti yarışı ise 59,5 kg lar  48 -- 50 KG LI ATLAR İLE 5,6,7,8 ATLARA DİKKAT (((( 59,5 7 YAŞINDA FOVORİ ))))         (( 55 KG 7 YAŞINDA ))) (( 55,5 9 YAŞINDA )))(( 57 KG 6 YAŞINDA )))((( 56 KG 7 YAŞINDA ))) | KUM= 3,4,5,6,7   NUMARALI ARASINDA GEÇER 5 YAŞINDA HANDİKAP 1 DİKKAT (((( 53 KG 5 YAŞINDA )))     56 KG 6 YAŞINDAKİ AT KAZANIR ((( 55,5 5 YAŞINDA ))) | Hand14:ilk 2 at arasında kazanç puanı han altında olan. | HANDİKAP 15 | Çim dişi=50,58,64,68,71,72 handikaplılar | Çim Yamak 2 =45,43  handikap | ÇİM = Yamak 3 =57,59,63 handikap | KUM=\n\n55 KG AT KAZANIR 55 handikap yada üstündeki atın kazanma şansı vardır hemen üstündeki handikap FOVORİ  PLASE  VE 1,2,4,,DIŞ KULVAR KAZANIR | ÇİM= 56 KG LI ATLAR yada 55 kg lılar..50,54..HANDİKAPLILAR...  % 90 KAZANIR  YOKSA 53,5 HANDİKAPLI VE HANDİKAPI 50 İLA 56 ARASINDAKİ ATLAR GELİR 43,49,52,53,61,63,64,65,\n\n\n6-9-16 -17-18-20-32-61-102 bülten puan beygir .com 2200 çim | KUM= HAFİF KG LI süpriz agır kg gelmez 4 YAŞINDA FOVORİ İSE KAZANIR 90 PUANIN KULVARININ ÜSTÜ BOMBA 2 STARLININ ALT VE ÜSTÜ İSE BOMBA GELİR | YAMAK 3 =53 KG 4 YAŞINDA AT KAZANIR((( 55,5 KG 4 YAŞINDA )) | Hand 15:hafif kilo favori yoksa | 2000 kum | HANDİKAP 16 | TR KUM= 5 YAŞINDA 52,5 KG KAZANIR | TR ÇİM= 58 KG 6 YAŞINDAKİ AT KAZANIR | ÇİM=4, 8,9,10,11 NOLU ATLAR KAZANIR SÜPRİZ BİTER   (((( 55,5 KG 7 YAŞINDA )))(( 52,5 5 YAŞINDA)) (( 54,5 KG 8 YAŞINDA ))) (( 50 KG 6 YAŞINDA ))(( 58 KG 5 YAŞINDA )))(( 56 KG 5 YAŞINDA )))(( 58,5 KG 5 YAŞINDA ))) | KUM= 3 ÇÜ AT SR 2100\n\nGENELDE 5 6,7,8,9 NOLU ATLAR....57, 64 ,65,66 handikaplı atlar kazanır...bomba..gelir..dikkat | Hand 16:favori veya 2 atlar. | 1600 çim"}, {"key": "4 YUKARI ARAPLAR HANDİKAP 17", "text": "ÇİM= HAFİF KG LI YÜKSEK PUANLI ATLAR KAZANIR (( 58 KG 7, 8 YAŞINDA ))"}, {"key": "4 YUKARI ARAPLAR 1200çim", "text": "KUM=  fovori...pls 6 YAŞINDA atlar...kazanır | Han17.hafif kg yüksek puanlı atlar."}, {"key": "4 YUKARI ARAPLAR AÇIK GR1", "text": "ÇİM= 1,2, ATIN DIŞINA ÇIKMAZ((( 58 KG 4 YAŞINDA PLASE   ))) (( 57 KG 4 YAŞINDA FOVORİ )) | KUM= 1,2,3 ATIN DIŞINA ÇIKMAZ 6 YAŞINDAKİ AT KAZANIR 1 Çİ HANDİKAP | AÇIK GR 3 KUM= 60,5 6 YAŞINDAKİ AT KAZANIR FOVORİ 59,5 KG 6 YAŞINDAKİ AT KAZANIR | ÇİM =95 PUANIN ÜSTÜ 85 puan ise  GELİR1,2,3,4 AT DIŞINA ÇIKMAZ | AÇIK = (( 59,5 KG 6 YAŞINDA )))"}, {"key": "5 YUKARI ARAPLAR AÇIK GR 2", "text": "ÇİM = FOVORİ KAZANIR İKRAMİYESİ BÜYÜK YARIŞTA | Açık:sürd favori veya 2. at. | Hand 20:kuvvetli grup favori plase zayıf grup sürpriz.alttan üsten4 yaşındaki han 3.at\n\n\n4 ve Yukarı Araplar\nŞartlı – 2———-: Genelde Favori gelmez, plaseler çok şanslı..\nKUM—————-: İlk 4 at arasında geçer, çok nadir sürpriz biter..\nŞartlı – 3———-: 10 yarışın 8 i favori biter..\nKUM—————-: Sürdirek favori gelir.\nŞartlı – 4———-: Genelde ilk 4 at arasında geçer.\nKUM—————-: 10 yarışın 7 si sürpriz, 3 ü plaseler arasında geçer. Favori yaklaşık 190-200 Puanı varsa gelir.\nŞartlı – 5 ———: Kuvvetli ve kalite atlar arasında favori gelir, birbirine denk atlar arasında sürpriz ihtimali çok yüksektir.\nKUM—————-: İlk 3 at dışına pek çıkmaz, genellikle 2,3. atlar gelir.\nKV-6 —————: Favorinin şansı az Sürpriz olur\nKUM—————-: Uzunda ağır kilo favori şanslıdır.Kısa da favori hafif kilo ise ağır kilo süpriz.\nKV-7 —————: Genelde Sürpriz olur. T.puanında 3.4.5.6.7.8.9.ata kadar gelebilir..\nKUM—————-: Sürpriz biter.\nKV-8—————-: Ağır kilolu süpriz atlar şanslıdır.\nKUM—————-: Genelde ilk 3 at, 10 koşunun 3 ü sürpriz..\nKV-9 —————: Favori kazanır\nKV-21 ————-: Sürpriz olur.\nKUM—————-: Genelde 2.3 atlar..\nKV-22 ————-: Türkiye puanına göre 2.3.4.atlar şanslıdır.\nKUM—————-: Genelde sürpriz..\nKV-23 —KUM—-:Favori hafif kilo ise şanslı yoksa Süpriz\nKV-24 —KUM—-:Türkiye puanına göre 1.2.3.4.atların dışına çıkmaz.\nHandikap-13—-: En üst sıradaki en ağır atın kazanma şansı çok yüksektir.(63 kg.) Yoksa sürpriz biter (hafif kg.)\nKUM—————-: Genelde ağır kg li sürpriz atlar, yoksa hafif favori gelir.\nHandikap-14—-: Favori gelmez, 3.4.5.6 ve sonraki atlar.\nKUM—————-: Favori veya sürpriz her ihtimalde olabilir..\nHandikap-15—-: Favori hafif kilo ise kazanır. Yoksa Sürpriz olur. genellikle ağır kg. atlar (62 kg.)\nKUM—————-: En üstten veya en alttan ilk iki atla bitmesi çok olası, genelde sürpriz biter.\nHandikap-16—-: Uzun da favori kısa da 2.3.4.atlar şanslıdır.\nKUM—————-: Favori gelmez sürpriz biter.\nHandikap-17—–: Genelde favori plaseler..\nKUM—————–: Hafif kg.lı atların şansı çok. | 5 YUKARI ARAPLAR"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 2", "text": "ÇİM = GENEL PUANDA 1,2,3 ATLAR KAZANIR | KUM=İLK 3 ATIN DIŞINA ÇIKMAZ | 6 YAŞINDA ATLARA DİKKAT % 95 FOVORİ PLASELER   % 5 75 PUANLI ATLAR | Şartlı2:varsa sürd.yoksa 2.3 atlar."}, {"key": "5 YUKARI ARAPLAR ŞARTLI 3", "text": "ÇİM =FOVORİ PLASELER ARASINDA BİTER | KUM=55 KG FOVORİ VRSA KAZANIR YOKSA 1,2,3,4,5 HANDİKAPLI ATLAR GELİR | 9 YAŞINDAKİ ATLAR KAZANIBİLİR DİKKAT  HANDİKAP AYIRAN AT VARSA TEK ATINIZ BÜYÜK YAŞLI ATLAR VE HANDİKAP YÜKSEKLERKAZANIR | Şartlı3.favori.hafif kilo plase gelebilir.top 1.at | 1300 kum"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 4", "text": "ÇİM=3,4 ATLAR ÇOK ŞANSLI SÜPRİZ OLASILIĞI VARDIR DİKKAT DİŞİDE 1 Çİ SIRALAMADA 1300 | KUM= FOVORİ PLASENİN DIŞINA ÇIKMAZ | SON YARIŞLARINDA 3,4 ÇÜLÜK YAPAN AT VE HANDİKAPLARI 1,2,3 BİRLİKTE BOMBASI 57 KG 3 TANE İSE 3 HANDİKAPLISI GELİR | Şartlı4:sürd.at gelir yoksa sürpriz"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 5", "text": "ÇİM= GENELDE FOVORİ KAZANIR | KUM= HAFİF KG VARSA KAZANIR FOVORİ YOKSA 48-50-55-54 KG LI ATLAR SÜPRİZ | AGIR KGLI ATIN ÜSTÜNDEKİ ATI TEK ATINIZ 1,2,3,5 HANDİKAPLAR  ATLAR 2 tane ve 3 TANE BİRİNÇİLİK YAPAN  SON YARIŞLARINDA KAZANIR TOTOSUNA BAK 57KG 58,KG 59KG 1,2 HANDİKAPLILAR KAZANIR | Şartlı5:sürd at kazanır."}, {"key": "5 YUKARI ARAPLAR ŞARTLI 11", "text": "ÇİM =1,2 HANDİKAPLAR GENEL PUANLARLA BİRLİKTE | KUM=İLK 2 AT ÇOK ŞANSLI"}, {"key": "5 YUKARI ARAPLAR KV 6", "text": "ÇİM= FOVORİ PLASELER ŞANSLIDIR | KUM= 56 KG ÜSTÜNDEKİ NUMARALI AT KAZANIR PLASELERE DİKKAT 6 YAŞINDAKİ ATLARA DİKKAT | 61 HANDİKAP VE 68 HANDİKAP ARASINDA kalan  YÜKSEK HANDİKAP VARSA TEK YAZINIZ  FOTOMAÇ FOVORİ VE İLK DÖRT ATININ KULVARLARININ NUMARALARINI YAZINIZ 8 YAŞINDAKİ ATIN KAZANMA ŞANSI VAR | Kv6:sürd gelmez sürpriz biter"}, {"key": "5 YUKARI ARAPLAR KV 7", "text": "ÇİM= HANDİKAP PUANI YÜKSEK 3 AT ARASINDA BİTER | KUM=İLK 2 AT ÇOK ŞANSLIDIR | Kv7:sürpriz ağırkilo"}, {"key": "5 YUKARI ARAPLAR KV 8", "text": "ÇİM=  56 KG VE ALTINDAKİ PLASE ATLAR DAHA ŞANSLIDIR | KUM=FOVORİ ÇOK ŞANSLIDIR HANDİKAP 1 DİKKAT | HANDİKAP 1 VEYA SÜPRİZ FOVORİ | Kv8:sürpriz."}, {"key": "5 YUKARI ARAPLAR KV 9", "text": "ÇİM= FOVORİ PLASELER DIŞINDA AT GELMEZ | KUM= FOVORİNİN ŞANSI AZ 4,5,6 HANDİKAPLI ATLAR KAZANIR"}, {"key": "5 YUKARI ARAPLAR KV 21", "text": "ÇİM= HANDİKAP PUANLARI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ | KUM=3,4, ATLAR ÇOK ŞANSLIDIR FOVORİ HAFİF KG SA KAZANABİLİR | Kv21 sürpriz."}, {"key": "5 YUKARI ARAPLAR KV 22", "text": "ÇİM= SÜPRİZ BİTER BOMBALAR PATLAR | KUM= AĞIR KG LI FOVORİ GELMEZ 80,85 PUANLI ATLAR ÇOK ŞANSLI | Kv22:hafif kilo favori at gelir."}, {"key": "5 YUKARI ARAPLAR KV 23", "text": "ÇİM= GENELDE SÜPRİZ BİTER | KUM= GENELDE SÜPRİZ BİTER"}, {"key": "5 YUKARI ARAPLAR KV 24", "text": "ÇİM= FOVORİ HAFİF KG SA KAZANIR YOKSA YOKSA SÜPRİZ BİTER | KUM= ÇOK SÜPRİZ BİTER"}, {"key": "5 YUKARI ARAPLAR KV 25", "text": "ÇİM= HANDİKAP PUANI YÜKSEK YAŞLI ATLAR KAZANIR | KUM=İLK 2 ATIN DIŞINA ÇIKMAZ"}, {"key": "5 YUKARI ARAPLAR KV 26", "text": "ÇİM= 2,3,4 ATLAR ŞANSLI HAFİF KG LI SÜPRİZLERE DİKKAT | KUM= HANDİKAP PUANI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ | HANDİKAP 13 | TR KUM= | ÇİM= HERZAMAN SÜPRİZ BİTER HAFİF KG LI ATLAR KAZANIR | KUM=% 85 HAFİF KG LI SÜPRİZ ATLAR KAZANIR % 15 PLASELER KAZANIR | 56,5 61,5 KG LAR ŞANSLIDIR | Hand 13:favori plase."}, {"key": "5 YUKARI ARAPLAR HANDİKAP 14", "text": "ÇİM=48,50 KGLI ATLAR DİKKAT SÜPRİZ BİTER | KUM= DEVAM LI SÜPRİZ BİTER...1200\n48\n47\n45\n43\n32 | KAPLI 2 TANE İSE HANDİKAPLI 1 YÜKSEK OLAN KAZANIR | Hand 14:hafif kilo favori ağır kilo | HANDİKAP 15 | TR KUM= | ÇİM= SIRALAMADA 7,8,9, ATLAR ŞANSLI SÜPRİZ BİTER | KUM= 3 ÇÜ AT SR 1700\nganyan...ortalaması..1700\n6,44\n9,41\n6,89\n9,88\n8,13\n8,60\n8,75\n8,76\n\n\nDİŞİLERDE 53,5 KG SON 2 HANDİKAP BOMBA 48,,49,50,51 HANDİKAP BOMBA | Hand 15 :favori 1-2 at"}, {"key": "5 YUKARI ARAPLAR HANDİKAP 16", "text": "KUM=2100kum...5ila..7...yasındaki...atlar..kazanır | TR ÇİM= T G P 6 ÇI AT 1500 | ÇİM= HAFİF KG LI ATLAR ÇOK ŞANSLI GENELDE PLASELER KAZANIR | KUM= HAFİF KG LI SÜPRİZ ATLAR KAZANIR 1,2 NUMARALI ATLAR 2 ÇİLİK YAPARLAR DIŞ VE İÇ KULVARLI ATLAR KAZANIR YAŞLI ATLARIN ŞANSI YÜKSEK 1,2,3 HANDİKAPLAR VE SON 2 ÇİLİK YAPAN ATA DİKKAT,,,6,,7,8,9,,yaşındaki...atlar...kazanır | Hand 16:sürpriz."}, {"key": "5 YUKARI ARAPLAR HANDİKAP 17", "text": "ÇİM= 54,56, KG LI ÇOK SÜPRİZ BİTER\n2  Çİ  AT SR 1900 | KUM= 48 KG LI ATLAR ŞANSLI 50 KG DA SON 1 ÇİLİK VARSA KAZANIR 100 95 85 60 PUANLAR ARASINDA GEÇER HANDİKAP 1Çİ   85 PUANSA TEk pençere bırakma gelir \n.....1,2,4,5,7...HANDİKAPLILAR..KAZANIR..YÜKSEK | Hand 17:favori ilk 3 at.yıl-1-top-1-at | Hand21:ağır favori atlar.,"}, {"key": "5 YUKARI ARAPLAR AÇIK GR1", "text": "ÇİM=İLK 2 ATIN DIŞINA ÇIKMAZ | KUM= 1,2,3 HANDİKAP ARASINDA GEÇER PUANLARLA BİRLİKTE | Gr 1-2:handikapı yüksek 1-2 at. | Sürdirek at :en pahalı yarışlardan gelen atlardan az kilo düşen at. | Üst gruptan gelen at. | Kısadan uzuna kilo alan at. | En çok kilo almış kötü at sürpriz yapar.kazancı azdır."}, {"key": "5 YUKARI ARAPLAR AÇIK GR 2", "text": "ÇİM= | KUM= | Gr 1-2:handikapı yüksek 1-2 at."}, {"key": "5 ve yukarı araplar AÇIK GR 3", "text": "ÇİM= | KUM= | Gr3:favori veya 2.at | Hand20:(grup 2 ağır kilo favori).süpriz biter.grup1-kuvvetli han-2-at | 3 YAŞLI ARAPLAR\n\n\n3 yaşlı araplar şartlı 1\nÇİM=1,2 ATLAR ÇOK ŞANSLI\nKUM= % 80 İLK YÜKSEK PUANLI ATTLAR HANDİKAP VE PUAN BİRLİKTE GANYAN SIRALAMASI İLK 4 AT DIŞINA ÇIKMAZ\n1 11 (%22,75)\n2 4 (%18,54)\n3 2 (%11,51)\n4 7 (%11,05)\n5 5 (%9,28)\n6 10 (%9,15)\n7 3 (%5,23)\n8 8 (%4,33)\n9 6 (%3,68)\n10 1 (%2,31)\n11 9 (%2,16)Harış hayatına şartlı koşuyla başlayacak olan arap atlarının zorlu koşusu her ihtimale açık\n\n\n3 yaşlı araplar şartlı 2\nÇİM=FOVORİ PLASE ATLARIN DIŞIna çıkarsa bomba 90 puanın altı ve üstünü yaz\nKUM= YÜKSEK PUANLI VE HANDİKAPLI 3 AT DIŞINA ÇIKMAZ \nFovari gelmeyebilir süpriz bitebilir imkanlarınız ölçüsünde çok at yazmakta fayda var\n\n\n3 yaşlı araplar şartlı 3\nÇİM=ÇOK SÜPRİZ BİTER 1,handikap 56 kg plase 5,6,7 ATLAR % 85 ŞANSLI\nKUM= PLASELER % 80 KAZANIR % 20 DÜŞÜK PUANLI ATLAR KAZANIR\nFovari at geçilmez banko\n\n\n3 yaşlı araplar şartlı4\nÇİM= GENELDE FOVORİ PLASELER ATLARIN DIŞINA ÇIKMAZ\nKUM=(((( DİŞİLERDE GENELDE FOVORİ VE EN DÜŞÜK HANDİKAPLISI ARASINDA BİTER ))) ERKEKLERDE 3 ATTAN yüksek HANDİKAP BİRİ KAZANIR \nFovari atların kazanma şansı çok yüksek 57 kg atlara dikkat\n\n\n3 yaşlı araplar şartlı 5\nÇİM=GENELDE FOVORİ PLASELERİN DIŞINA ÇIKMAZ\nKUM= HANDİKAP PUANLI ORTADAKİ ATLAR % 80 % 20 1,2 ATLAR KAZANIR HANDİKAPLARI SIRAYA DİZ VE GÖBEKTEKİ HANDİKAPIİLK 3 HANDİKAP ÇIKARSA AYNI HANDİKAPLARI YAZ\nFovari gelmeyebilir 2-3 atlar yada süpriz biter fovari belirgin ise tek atabilirsiniz\n\n3 YAŞLI ARAPLAR ŞARTLI 11\nÇİM=1,2 AT KAZANIR\nKUM= GENELDE 3 AT DIŞINA ÇIKMAZ\n\n3 yaşlı araplar handikap 13\nÇİM=HER ZAMAN HAFİF KG ATLAR 5,6,7 ATLAR GELİR\nKUM= DAİMA SÜPRİZ BİTER AĞIR KG LI ATLARA (((( DİKKAT FOVORİ HAFİF KG SA GELİR TEK ATINIZ )))\nHer ihtimale açık bir koşu süpriz ihtimali yüksek ağır kg 1-2-3 atlar kazanabilir hafif kg süpr.at.dikkat\n\n\n3 yaşlı araplar handikap 14\nÇİM=48-50 KG ATLAR % 75 KAZANIR\nKUM=AĞIR KG LILAR % 80 ŞANSLIDIR % 20 ÇOK SÜPRİZ BİTER \nHer ihtimale açık bir koşu %60 1-2-3 atlar şanslı hafif kg atlara dikkat çok süpriz bitebilir\n\n3 yaşlı araplar handikap 15\nÇİM=7,8,9,10 NUMARLI ATLAR % 85 KAZANIRN\nKUM= NUMARA SIRALAMASINDAKİ ORTADAKİ 3 ATA DİKKAT EDİNİZ SÜPRİZ BİTER\nÇok zor bir koşu ağır kg fovari atların gelme şansı çok az 50 kg altı süpriz biter %30 1-2-3 atlar\n\n\n3 yaşlı araplar handikap 16\nÇİM=50 KG VE ALTINDAKİ ATLAR GELİR BOMBALAR PATLAR\nKUM= FOVORİ PLASELER ŞANSLI \nHafif kg atların kazanma şansı daha yüksek süpriz yada fovari %60 1-2-3 şanslı %40 süpriz\n\n\n3 Yaşlı araplar handikap 17\nÇİM=AĞIR KG LI AT % 60 KAZANIR % 40 SÜPRİZ BİTER\nKUM= 55 KG VE ALTI ÇOK SÜPRİZ BİTER\nGenelde fovari geçilmez 1-2-3 şanslı yada nadiren hafif kg. sürpriz\n\n\n3 yaşlı araplar kv 6\nÇİM=İLK YÜKSEK 3 PUANLI AT KAZANIR\nKUM=% 70 FOVORİ % 30 50 KG CİVARI ATLAR KAZANIR \n%80 1-2 atların dışına çıkmaz %20 süpriz bitebilir\n\n\n3 yaşlı araplar kv 7\n\nçimde fovori kazanır hafif kg sa gelir\nÇİM=ERKEK =2,3,4 ATLAR GELİR\nÇİM=DİŞİ =1,2 ATLAR GELİR \nKUM=DİŞİ=2,3,4 HANDİKAPLAR\nKUM=ERKEK=1,2,3 FOVORİ PLASELER DIŞINA ÇIKMAZ\n1-2 atın dışına çıkmaz nadiren süprizde bitebilir %20 şans\n\n\n3 yaşlı araplar kv 8\nÇİM=İLK 2 ATIN ARASINDA BİTER handikapı yüksek\nKUM= % 90 İLK 3 AT ARASINDA BİTER\n1-2-3 dışına çıkmaz fovarinin kazanma şansı daha yüksek bankoysa tek\n\n3 yaşlı araplar kv 9\nÇim= 3,4,5 % 85 1,2 % 15 HANDİKAPLI ATLAR KAZANIR\nKum= % 70 2,3 HANDİKAPLI ATLAR % 30 50 KG CİVARINDAKİ ATLAR\n\n\n3 yaşlı araplar kv 21\nÇİM=HANDİKAP PUANI YÜKSEK 2 AT ARASINDA BİTER\nKUM= 56 KG CİVARINDAKİ İLK 3 AT ÇOK ŞANSLI \nFovarinin kazanma şansı %40 süpriz ihtimali yüksek ağır kg belirgin fovari gelebilir\n\n\n3 yaşlı araplar kv 22\nÇİM=ÖZELLİKLE 3,4 ATLAR ŞANSLI\nKUM= 54,56, KG PLASELER VARSA ŞANSLI YOKSA ÇOK SÜPRİZ BİTER\nGenelde 1-2 atlar şanslı ama hafif kg süprizde gelebilir\n\n3 yaşlı araplar kv 23 \nÇİM=HAFİF KG LI HANDİKAPI YÜKSEK ATLAR SÜPRİZ YAPAR\nKUM= GENELDE ORTADAKİ ATLAR ŞANSLI 1,2 ATLARIN ŞANSI AZ \nFovari kazanır %90 şanssı var %10 sürpriz\n\n3 YAŞLI ARAPLAR KV 24\nÇİM=GENEL PUANI YÜKSEK 2 ATIN DIŞINA ÇIKMAZ\nKUM=1,2 ATLAR KAZANIR\n\n3 YAŞLI ARAPLAR KV 25\nÇİM=FOVORİ HAFİF KG İSE KAZANIR DEGİLSE BOMBALAR PATLAR\nKUM=56 KG CİVARINDAKİ FOVORİ VARSA ŞANSLI YOKSA SÜPRİZ BİTER\n\n3 YAŞLI ARAPLAR KV 26\nÇİM=KESİNLİKLE HAFİF KG LI ATLAR 5,6,7 ATLAR GELİR\nKUM= KESİNLİKLE 3 AT KAZANIR HANDİKAP YÜKSEK\n\n3 yaşlı araplar açık\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ\nKUM= 1,2.3 ATLAR KAZANIR\n1-2 atların dışına çıkmaz ama imkanlarınaz ölçüsünde tuttuğunuz süpriz atları yazın\n\n\n3 YAŞLI ARAPLAR AÇIK GR 1\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DIŞINA ÇIKMAZ\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ\n3 YAŞLI ARAPLAR AÇIK GR 2\nÇİM=HANDİKAP PUANI YÜKSEK 3 AT DILINA ÇIKMAZ\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ\n3 YAŞLI ARAPLAR GR3\nÇİM=HANDİKAP İLK 3 AT DIŞINA ÇIKMAZ en yüksek handikapın üstünü yaz bombası dır\nKUM= İLK 3 ATIN DIŞINA ÇIKMAZ 1,2,4 ÇÜ HANDİKAPLAR ARASINDA GEÇER VE 2 NUMARALI AT ÇIKIŞI 7 VE 9 NUMARALI AT ÇIKIŞI 8 İSE YAZILMALIDIR ÇOK BOMBASI FOVORİNİN ÜSTÜNÜ YAZILMALIDIR EĞER BOMBA OLURSA | 5 ve yukarı araplar | ŞARTLI 2\nÇİM = GENEL PUANDA 1,2,3 ATLAR KAZANIR\nKUM=İLK 3 ATIN DIŞINA ÇIKMAZ\n6 YAŞINDA ATLARA DİKKAT % 95 FOVORİ PLASELER % 5 75 PUANLI ATLAR\nŞartlı2:varsa sürd.yoksa 2.3 atlar. | ŞARTLI 3\nÇİM =FOVORİ PLASELER ARASINDA BİTER\nKUM=55 KG FOVORİ VRSA KAZANIR YOKSA 1,2,3,4,5 HANDİKAPLI ATLAR GELİR\n9 YAŞINDAKİ ATLAR KAZANIBİLİR DİKKAT HANDİKAP AYIRAN AT VARSA TEK ATINIZ BÜYÜK YAŞLI ATLAR VE HANDİKAP YÜKSEKLERKAZANIR  altılıanaliz 2 çi atı gelir  yamak 1 de\nŞartlı3.favori.hafif kilo plase gelebilir.top 1.at | ŞARTLI 4\nÇİM=3,4 ATLAR ÇOK ŞANSLI SÜPRİZ OLASILIĞI VARDIR DİKKAT DİŞİDE 1 Çİ SIRALAMADA 1300\nKUM= FOVORİ PLASENİN DIŞINA ÇIKMAZ | SON YARIŞLARINDA 3,4 ÇÜLÜK YAPAN AT VE HANDİKAPLARI 1,2,3 BİRLİKTE BOMBASI 57 KG 3 TANE İSE 3 HANDİKAPLISI GELİR\nŞartlı4:sürd.at gelir yoksa sürpriz | ŞARTLI 5\nÇİM= GENELDE FOVORİ KAZANIR\nKUM= TGP 3 AT KAZANIR 48-50-55-54 KG LI ATLAR SÜPRİZ | AGIR KGLI ATIN ÜSTÜNDEKİ ATI TEK ATINIZ 1,2,3,5 HANDİKAPLAR ATLAR 2 tane ve 3 TANE BİRİNÇİLİK YAPAN SON YARIŞLARINDA KAZANIR TOTOSUNA BAK 57KG 58,KG 59KG 1,2 HANDİKAPLILAR KAZANIR\nŞartlı5:sürd at kazanır. | ŞARTLI 11\nÇİM =1,2 HANDİKAPLAR GENEL PUANLARLA BİRLİKTE\nKUM=İLK 2 AT ÇOK ŞANSLI | KV 6\nÇİM= FOVORİ PLASELER ŞANSLIDIR\nKUM= 56 KG ÜSTÜNDEKİ NUMARALI AT KAZANIR PLASELERE DİKKAT 6 YAŞINDAKİ ATLARA DİKKAT | 61 HANDİKAP VE 68 HANDİKAP ARASINDA kalan YÜKSEK HANDİKAP VARSA TEK YAZINIZ FOTOMAÇ FOVORİ VE İLK DÖRT ATININ KULVARLARININ NUMARALARINI YAZINIZ 8 YAŞINDAKİ ATIN KAZANMA ŞANSI VAR\nKv6:sürd gelmez sürpriz biter | KV 7\nÇİM= HANDİKAP PUANI YÜKSEK 3 AT ARASINDA BİTER\nKUM=İLK 2 AT ÇOK ŞANSLIDIR\nKv7:sürpriz ağırkilo | KV 8\nÇİM= 56 KG VE ALTINDAKİ PLASE ATLAR DAHA ŞANSLIDIR\nKUM=FOVORİ ÇOK ŞANSLIDIR HANDİKAP 1 DİKKAT\nHANDİKAP 1 VEYA SÜPRİZ FOVORİ\nKv8:sürpriz. | KV 9\nÇİM= FOVORİ PLASELER DIŞINDA AT GELMEZ\nKUM= FOVORİNİN ŞANSI AZ 4,5,6 HANDİKAPLI ATLAR KAZANIR | KV 21\nÇİM= HANDİKAP PUANLARI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ\nKUM=3,4, ATLAR ÇOK ŞANSLIDIR FOVORİ HAFİF KG SA KAZANABİLİR\nKv21 sürpriz. | KV 22\nÇİM= SÜPRİZ BİTER BOMBALAR PATLAR\nKUM= AĞIR KG LI FOVORİ GELMEZ 80,85 PUANLI ATLAR ÇOK ŞANSLI\nKv22:hafif kilo favori at gelir. | KV 23\nÇİM= GENELDE SÜPRİZ BİTER\nKUM= GENELDE SÜPRİZ BİTER | KV 24\nÇİM= FOVORİ HAFİF KG SA KAZANIR YOKSA YOKSA SÜPRİZ BİTER\nKUM= ÇOK SÜPRİZ BİTER | KV 25\nÇİM= HANDİKAP PUANI YÜKSEK YAŞLI ATLAR KAZANIR\nKUM=İLK 2 ATIN DIŞINA ÇIKMAZ"}, {"key": "5 ve yukarı araplar KV 26", "text": "ÇİM= 2,3,4 ATLAR ŞANSLI HAFİF KG LI SÜPRİZLERE DİKKAT\nKUM= HANDİKAP PUANI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ | HANDİKAP 13\nTR KUM=\nÇİM= HERZAMAN SÜPRİZ BİTER HAFİF KG LI ATLAR KAZANIR\nKUM=% 85 HAFİF KG LI SÜPRİZ ATLAR KAZANIR % 15 PLASELER KAZANIR\n56,5 61,5 KG LAR ŞANSLIDIR\nHand 13:favori plase. | HANDİKAP 14\nÇİM=48,50 KGLI ATLAR DİKKAT SÜPRİZ BİTER\nKUM= DEVAM LI SÜPRİZ BİTER…1200\n48\n47\n45\n43\n32 | KAPLI 2 TANE İSE HANDİKAPLI 1 YÜKSEK OLAN KAZANIR\nHand 14:hafif kilo favori ağır kilo | HANDİKAP 15\nTR KUM=\nÇİM= SIRALAMADA 7,8,9, ATLAR ŞANSLI SÜPRİZ BİTER\nKUM= 3 ÇÜ AT SR 1700\nganyan…ortalaması..1700\n6,44\n9,41\n6,89\n9,88\n8,13\n8,60\n8,75\n8,76 | DİŞİLERDE 53,5 KG SON 2 HANDİKAP BOMBA 48,,49,50,51 HANDİKAP BOMBA\nHand 15 :favori 1-2 at | HANDİKAP 16\nKUM=2100kum…5ila..7…yasındaki…atlar..kazanır\nTR ÇİM= T G P 6 ÇI AT 1500\nÇİM= HAFİF KG LI ATLAR ÇOK ŞANSLI GENELDE PLASELER KAZANIR 70 lilerin 3 çü handikaplısı gelir\nKUM= HAFİF KG LI SÜPRİZ ATLAR KAZANIR 1,2 NUMARALI ATLAR 2 ÇİLİK YAPARLAR DIŞ VE İÇ KULVARLI ATLAR KAZANIR YAŞLI ATLARIN ŞANSI YÜKSEK 1,2,3 HANDİKAPLAR VE SON 2 ÇİLİK YAPAN ATA DİKKAT,,,6,,7,8,9,,yaşındaki…atlar…kazanır\nHand 16:sürpriz. | HANDİKAP 17\nÇİM= 54,56, KG LI ÇOK SÜPRİZ BİTER | KUM= 48 KG LI ATLAR ŞANSLI 50 KG DA SON 1 ÇİLİK VARSA KAZANIR 100 95 85 60 PUANLAR ARASINDA GEÇER HANDİKAP 1Çİ 85 PUANSA TEk pençere bırakma gelir\n…..1,2,4,5,7…HANDİKAPLILAR..KAZANIR..YÜKSEK | AÇIK GR1\nÇİM=İLK 2 ATIN DIŞINA ÇIKMAZ\nKUM= 1,2,3 HANDİKAP ARASINDA GEÇER PUANLARLA BİRLİKTE\nGr 1-2:handikapı yüksek 1-2 at.\nSürdirek at :en pahalı yarışlardan gelen atlardan az kilo düşen at.\nÜst gruptan gelen at.\nKısadan uzuna kilo alan at.\nEn çok kilo almış kötü at sürpriz yapar.kazancı azdır."}, {"key": "5 YUKARI ARAPLAR AÇIK GR 2", "text": "ÇİM=\nKUM=\nGr 1-2:handikapı yüksek 1-2 at. | AÇIK GR 3\nÇİM=\nKUM=\nGr3:favori veya 2.at | Hand20:(grup 2 ağır kilo favori).süpriz biter.grup1-kuvvetli han-2-at | 5 YUKARI ARAPLAR"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 2", "text": "ÇİM = GENEL PUANDA 1,2,3 ATLAR KAZANIR | KUM=İLK 3 ATIN DIŞINA ÇIKMAZ | 6 YAŞINDA ATLARA DİKKAT % 95 FOVORİ PLASELER   % 5 75 PUANLI ATLAR | Şartlı2:varsa sürd.yoksa 2.3 atlar."}, {"key": "5 YUKARI ARAPLAR ŞARTLI 3", "text": "ÇİM =FOVORİ PLASELER ARASINDA BİTER | KUM=55 KG FOVORİ VRSA KAZANIR YOKSA 1,2,3,4,5 HANDİKAPLI ATLAR GELİR | 9 YAŞINDAKİ ATLAR KAZANIBİLİR DİKKAT  HANDİKAP AYIRAN AT VARSA TEK ATINIZ BÜYÜK YAŞLI ATLAR VE HANDİKAP YÜKSEKLERKAZANIR | Şartlı3.favori.hafif kilo plase gelebilir.top 1.at | 1300 kum"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 4", "text": "ÇİM=3,4 ATLAR ÇOK ŞANSLI SÜPRİZ OLASILIĞI VARDIR DİKKAT DİŞİDE 1 Çİ SIRALAMADA 1300 | KUM= FOVORİ PLASENİN DIŞINA ÇIKMAZ | SON YARIŞLARINDA 3,4 ÇÜLÜK YAPAN AT VE HANDİKAPLARI 1,2,3 BİRLİKTE BOMBASI 57 KG 3 TANE İSE 3 HANDİKAPLISI GELİR | Şartlı4:sürd.at gelir yoksa sürpriz"}, {"key": "5 YUKARI ARAPLAR ŞARTLI 5", "text": "ÇİM= GENELDE FOVORİ KAZANIR | KUM= TGP 3 AT KAZANIR  48-50-55-54 KG LI ATLAR SÜPRİZ | AGIR KGLI ATIN ÜSTÜNDEKİ ATI TEK ATINIZ 1,2,3,5 HANDİKAPLAR  ATLAR 2 tane ve 3 TANE BİRİNÇİLİK YAPAN  SON YARIŞLARINDA KAZANIR TOTOSUNA BAK 57KG 58,KG 59KG 1,2 HANDİKAPLILAR KAZANIR | Şartlı5:sürd at kazanır."}, {"key": "5 YUKARI ARAPLAR ŞARTLI 11", "text": "ÇİM =1,2 HANDİKAPLAR GENEL PUANLARLA BİRLİKTE | KUM=İLK 2 AT ÇOK ŞANSLI"}, {"key": "5 YUKARI ARAPLAR KV 6", "text": "ÇİM= FOVORİ PLASELER ŞANSLIDIR | KUM= 56 KG ÜSTÜNDEKİ NUMARALI AT KAZANIR PLASELERE DİKKAT 6 YAŞINDAKİ ATLARA DİKKAT | 61 HANDİKAP VE 68 HANDİKAP ARASINDA kalan  YÜKSEK HANDİKAP VARSA TEK YAZINIZ  FOTOMAÇ FOVORİ VE İLK DÖRT ATININ KULVARLARININ NUMARALARINI YAZINIZ 8 YAŞINDAKİ ATIN KAZANMA ŞANSI VAR | Kv6:sürd gelmez sürpriz biter"}, {"key": "5 YUKARI ARAPLAR KV 7", "text": "ÇİM= HANDİKAP PUANI YÜKSEK 3 AT ARASINDA BİTER | KUM=İLK 2 AT ÇOK ŞANSLIDIR | Kv7:sürpriz ağırkilo"}, {"key": "5 YUKARI ARAPLAR KV 8", "text": "ÇİM=  56 KG VE ALTINDAKİ PLASE ATLAR DAHA ŞANSLIDIR | KUM=FOVORİ ÇOK ŞANSLIDIR HANDİKAP 1 DİKKAT | HANDİKAP 1 VEYA SÜPRİZ FOVORİ | Kv8:sürpriz."}, {"key": "5 YUKARI ARAPLAR KV 9", "text": "ÇİM= FOVORİ PLASELER DIŞINDA AT GELMEZ | KUM= FOVORİNİN ŞANSI AZ 4,5,6 HANDİKAPLI ATLAR KAZANIR"}, {"key": "5 YUKARI ARAPLAR KV 21", "text": "ÇİM= HANDİKAP PUANLARI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ | KUM=3,4, ATLAR ÇOK ŞANSLIDIR FOVORİ HAFİF KG SA KAZANABİLİR | Kv21 sürpriz."}, {"key": "5 YUKARI ARAPLAR KV 22", "text": "ÇİM= SÜPRİZ BİTER BOMBALAR PATLAR | KUM= AĞIR KG LI FOVORİ GELMEZ 80,85 PUANLI ATLAR ÇOK ŞANSLI | Kv22:hafif kilo favori at gelir."}, {"key": "5 YUKARI ARAPLAR KV 23", "text": "ÇİM= GENELDE SÜPRİZ BİTER | KUM= GENELDE SÜPRİZ BİTER"}, {"key": "5 YUKARI ARAPLAR KV 24", "text": "ÇİM= FOVORİ HAFİF KG SA KAZANIR YOKSA YOKSA SÜPRİZ BİTER | KUM= ÇOK SÜPRİZ BİTER"}, {"key": "5 YUKARI ARAPLAR KV 25", "text": "ÇİM= HANDİKAP PUANI YÜKSEK YAŞLI ATLAR KAZANIR | KUM=İLK 2 ATIN DIŞINA ÇIKMAZ"}, {"key": "5 YUKARI ARAPLAR KV 26", "text": "ÇİM= 2,3,4 ATLAR ŞANSLI HAFİF KG LI SÜPRİZLERE DİKKAT | KUM= HANDİKAP PUANI YÜKSEK 3 ATIN DIŞINA ÇIKMAZ | HANDİKAP 13 | TR KUM= | ÇİM= HERZAMAN SÜPRİZ BİTER HAFİF KG LI ATLAR KAZANIR | KUM=% 85 HAFİF KG LI SÜPRİZ ATLAR KAZANIR % 15 PLASELER KAZANIR | 56,5 61,5 KG LAR ŞANSLIDIR | Hand 13:favori plase."}, {"key": "5 YUKARI ARAPLAR HANDİKAP 14", "text": "ÇİM=48,50 KGLI ATLAR DİKKAT SÜPRİZ BİTER | KUM= DHÖW LERDE HANDİKAPI YÜKSEK  AĞIR KG LAR KAZANIR\n\n\nDEVAM LI SÜPRİZ BİTER...1200\n48\n47\n45\n43\n32 | KAPLI 2 TANE İSE HANDİKAPLI 1 YÜKSEK OLAN KAZANIR | Hand 14:hafif kilo favori ağır kilo | HANDİKAP 15 | TR KUM= | ÇİM= SIRALAMADA 7,8,9, ATLAR ŞANSLI SÜPRİZ BİTER | KUM= 3 ÇÜ AT SR 1700\nganyan...ortalaması..1700\n6,44\n9,41\n6,89\n9,88\n8,13\n8,60\n8,75\n8,76\n\n\nDİŞİLERDE 53,5 KG SON 2 HANDİKAP BOMBA 48,,49,50,51 HANDİKAP BOMBA | Hand 15 :favori 1-2 at"}, {"key": "5 YUKARI ARAPLAR HANDİKAP 16", "text": "KUM=2100kum...5ila..7...yasındaki...atlar..kazanır | TR ÇİM= T G P 6 ÇI AT 1500 | ÇİM= HAFİF KG LI ATLAR ÇOK ŞANSLI GENELDE PLASELER KAZANIR 70 lilerin 3 çü handikaplısı gelir | KUM= HAFİF KG LI SÜPRİZ ATLAR KAZANIR 1,2 NUMARALI ATLAR 2 ÇİLİK YAPARLAR DIŞ VE İÇ KULVARLI ATLAR KAZANIR YAŞLI ATLARIN ŞANSI YÜKSEK 1,2,3 HANDİKAPLAR VE SON 2 ÇİLİK YAPAN ATA DİKKAT,,,6,,7,8,9,,yaşındaki...atlar...kazanır | Hand 16:sürpriz."}, {"key": "5 YUKARI ARAPLAR HANDİKAP 17", "text": "ÇİM= 54,56, KG LI ÇOK SÜPRİZ BİTER | KUM= 48 KG LI ATLAR ŞANSLI 50 KG DA SON 1 ÇİLİK VARSA KAZANIR 100 95 85 60 PUANLAR ARASINDA GEÇER HANDİKAP 1Çİ   85 PUANSA TEk pençere bırakma gelir \n.....1,2,4,5,7...HANDİKAPLILAR..KAZANIR..YÜKSEK"}, {"key": "5 YUKARI ARAPLAR AÇIK GR1", "text": "ÇİM=İLK 2 ATIN DIŞINA ÇIKMAZ | KUM= 1,2,3 HANDİKAP ARASINDA GEÇER PUANLARLA BİRLİKTE | Gr 1-2:handikapı yüksek 1-2 at. | Sürdirek at :en pahalı yarışlardan gelen atlardan az kilo düşen at. | Üst gruptan gelen at. | Kısadan uzuna kilo alan at. | En çok kilo almış kötü at sürpriz yapar.kazancı azdır."}, {"key": "5 YUKARI ARAPLAR AÇIK GR 2", "text": "ÇİM= | KUM= | Gr 1-2:handikapı yüksek 1-2 at."}, {"key": "5 YUKARI ARAPLAR AÇIK GR 3", "text": "ÇİM= | KUM= | Gr3:favori veya 2.at | Hand20:(grup 2 ağır kilo favori).süpriz biter.grup1-kuvvetli han-2-at"}];
+
+function trLower(s) {
+    return s.toLocaleLowerCase('tr-TR');
+}
+
+function sehirIngilizYasUyumu(grupSecim, raceGrup) {
+    // raceGrup örn: "3 ve Yukarı İngilizler" -- kabaca eşleştirme
+    const g = trLower(raceGrup);
+    if (grupSecim.includes('2 yaşlı') && g.includes('2 yaşlı')) return true;
+    if (grupSecim.includes('3 yaşlı') && g.includes('3 yaşlı')) return true;
+    if (grupSecim.includes('ve yukarı') && g.includes('ve yukarı')) return true;
+    if (grupSecim.includes('arap') && g.includes('arap')) return true;
+    if (grupSecim.includes('ingiliz') && g.includes('ingiliz')) return true;
+    return false;
+}
+
+function kategoriRaceGrupEslesir(kategori, raceGrupText) {
+    // raceGrupText burada 5. kolon olan "Maiden / Şartlı 4 / Handikap 15 /H2" gibi metin (cols[4])
+    const k = trLower(kategori).replace('-', ' ');
+    const r = trLower(raceGrupText || '');
+    if (k === 'açık') return r.includes('kv-') === false && (r.includes('açık') || r.includes('gr1') || r.includes('gr2') || r.includes('gr3'));
+    return r.replace('-', ' ').includes(k);
+}
+
+function ruleScore(rule, grupSecim, kategori) {
+    const key = trLower(rule.key);
+
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const kelimeVar = (hedef, kelime) => {
+        // Kelime/sayı sınırı gözeten arama: "4" artık "14","24" içinde eşleşmez.
+        const re = new RegExp('(^|[^a-zçğıöşü0-9])' + esc(kelime) + '([^a-zçğıöşü0-9]|$)', 'i');
+        return re.test(hedef);
+    };
+
+    // 0) IRK SERTLEŞTİRMESİ: Arap sorgusuna İngiliz notu (veya tersi) ASLA gösterilmesin.
+    const grupLower = trLower(grupSecim);
+    const secilenIrk = grupLower.includes('arap') ? 'arap' : (grupLower.includes('ingiliz') ? 'ingiliz' : null);
+    if (secilenIrk) {
+        const keyArap = key.includes('arap');
+        const keyIngiliz = key.includes('ingiliz');
+        if (secilenIrk === 'arap' && keyIngiliz && !keyArap) return 0;
+        if (secilenIrk === 'ingiliz' && keyArap && !keyIngiliz) return 0;
+    }
+
+    let score = 0;
+
+    // 1) Yaş/Irk grubu uyumu (kelime sınırlı, "ve" gibi dolgu kelimeler hariç)
+    trLower(grupSecim).split(' ').filter(t => t.length > 1 && t !== 've').forEach(t => {
+        if (kelimeVar(key, t)) score += (t.startsWith('arap') || t.startsWith('ingiliz')) ? 4 : 1;
+    });
+
+    // 2) Koşu kategorisi: önce TAM İFADE eşleşmesi ara (örn "şartlı 4", "kv 7", "handikap 15")
+    const katNorm = trLower(kategori).replace('-', ' ').trim();
+    const keyNorm = key.replace('-', ' ');
+    if (katNorm && keyNorm.includes(katNorm)) {
+        score += 10; // key'de tam ifade eşleşti: güçlü bonus
+    } else if (katNorm && trLower(rule.text || '').replace('-', ' ').includes(katNorm)) {
+        score += 4; // sadece metin içinde (gömülü/birleşmiş blok) bulundu: orta bonus
+    } else {
+        // tam ifade yoksa kelime kelime dene (yine sınır gözeterek)
+        katNorm.split(' ').filter(t => t.length > 0).forEach(t => {
+            if (kelimeVar(keyNorm, t)) score += 2;
+        });
+    }
+
+    return score;
+}
+
+function extractPistMetin(ruleText, pist) {
+    const parts = ruleText.split(' | ');
+    const target = pist === 'çim' ? ['çim','cim'] : (pist === 'kum' ? ['kum'] : ['sentetik']);
+    let found = [];
+    parts.forEach(p => {
+        const low = trLower(p);
+        const m = low.match(/^([a-zçğıöşü]+)\s*=/);
+        if (m && target.some(t => m[1].startsWith(t))) {
+            found.push(p.replace(/^[^=]+=\s*/, '').trim());
+        }
+    });
+    if (found.length === 0) {
+        // pist etiketi yoksa genel notları döndür
+        found = parts.filter(p => !p.includes('='));
+    }
+    return found.join(' '); 
+}
+
+function superSorgula() {
+    parseData();
+    const grupSecim = document.getElementById('superGrup').value;
+    const kategori = document.getElementById('superKategori').value;
+    const pist = document.getElementById('superPist').value;
+    const mesafe = parseInt(document.getElementById('superMesafe').value) || 0;
+
+    // --- 1) Geçmiş veriden istatistik (içe aktarılan CSV dahil tüm races dizisinden) ---
+    const filtered = races.filter(r => {
+        const pistUyum = pist === 'çim' ? r.pist === 'Çim' : (pist === 'kum' ? r.pist === 'Kum' : r.pist === 'Sentetik');
+        const mesafeUyum = mesafe ? Math.abs(r.mesafe - mesafe) <= 100 : true;
+        return pistUyum && mesafeUyum && sehirIngilizYasUyumu(grupSecim, r.grup) && kategoriRaceGrupEslesir(kategori, r.kategori);
+    });
+
+    let kiloToplam = 0, kiloSayac = 0, puanToplam = 0, puanSayac = 0;
+    filtered.forEach(r => {
+        const kg = parseFloat((r.kilo || '').replace(',', '.'));
+        if (!isNaN(kg)) { kiloToplam += kg; kiloSayac++; }
+        if (r.puan) { puanToplam += r.puan; puanSayac++; }
+    });
+    const ortKilo = kiloSayac ? (kiloToplam / kiloSayac).toFixed(1) : '-';
+    const ortPuan = puanSayac ? (puanToplam / puanSayac).toFixed(0) : '-';
+
+    // --- 2) Uzman kural kitabından en uygun blokları bul ---
+    const scored = rulesData.map(r => ({ ...r, score: ruleScore(r, grupSecim, kategori) }))
+                             .filter(r => r.score > 0)
+                             .sort((a, b) => b.score - a.score)
+                             .slice(0, 4);
+
+    let html = `<div class="high">`;
+    const mesafeEtiket = mesafe ? `${mesafe}m (±100m)` : 'Tüm mesafeler';
+    html += `<strong>📊 Geçmiş Veri İstatistiği</strong> — Bu kombinasyona (${grupSecim} / ${kategori} / ${pist} / ${mesafeEtiket}) uyan <strong>${filtered.length}</strong> koşu bulundu <span style="font-weight:normal; color:#475569;">(elde bulunan toplam veri: ${races.length} koşu)</span>.<br>`;
+    if (filtered.length > 0) {
+        html += `<div style="display:flex; gap:24px; margin:10px 0; flex-wrap:wrap;">`;
+        html += `<div><span style="color:#64748b;">Kazanan Atın Ortalama Kilosu</span><br><strong style="font-size:20px;">${ortKilo} kg</strong></div>`;
+        html += `<div><span style="color:#64748b;">Kazanan Atın Ortalama Handikap Puanı</span><br><strong style="font-size:20px;">${ortPuan}</strong></div>`;
+        html += `</div>`;
+        html += `<table><tr><th>Tarih</th><th>Şehir</th><th>Grup</th><th>Koşu Cinsi</th><th>Mesafe</th><th>Kilo</th><th>Kazanan</th><th>Handikap Puanı</th></tr>`;
+        filtered.slice(0, 10).forEach(r => {
+            html += `<tr><td>${r.tarih}</td><td>${r.sehir}</td><td>${r.grup}</td><td>${r.kategori}</td><td>${r.mesafe}</td><td>${r.kilo || '-'}</td><td class="favori">${r.birinci}</td><td>${r.puan || '-'}</td></tr>`;
+        });
+        html += `</table>`;
+    } else {
+        html += `Bu spesifik kombinasyon için elimizdeki son koşu verisinde örnek yok — filtreleri biraz genişletmeyi deneyebilirsin.<br>`;
+    }
+    html += `</div>`;
+
+    html += `<div class="medium" style="margin-top:15px;">`;
+    html += `<strong>🧠 Uzman Kural Kitabı Tavsiyesi</strong><br><br>`;
+    if (scored.length > 0) {
+        scored.forEach(s => {
+            const pistMetni = extractPistMetin(s.text, pist);
+            html += `<div style="margin-bottom:12px; padding:10px; background:white; border-radius:6px; border-left:4px solid #eab308;">`;
+            html += `<strong>${s.key}</strong><br>`;
+            html += `<span style="color:#92400e;">${pistMetni || s.text}</span>`;
+            html += `</div>`;
+        });
+    } else {
+        html += `Bu kombinasyon için uzman notu bulunamadı. Kategori veya grubu değiştirip tekrar dene.`;
+    }
+    html += `</div>`;
+
+    document.getElementById('superSonuc').innerHTML = html;
+}
+
+function kosuYorumGoster() {
+    const grupSecim = document.getElementById('yorumGrup').value;
+    const kategori = document.getElementById('yorumKategori').value;
+    const pistSecim = document.getElementById('yorumPist').value; // tümü/çim/kum/sentetik
+    const mesafe = parseInt(document.getElementById('yorumMesafe').value) || 0;
+
+    const scored = rulesData.map(r => ({ ...r, score: ruleScore(r, grupSecim, kategori) }))
+                             .filter(r => r.score > 0)
+                             .sort((a, b) => b.score - a.score)
+                             .slice(0, 5);
+
+    let baslikParcalari = [grupSecim.toUpperCase(), kategori.toUpperCase()];
+    if (pistSecim !== 'tümü') baslikParcalari.push(pistSecim.toUpperCase());
+    if (mesafe) baslikParcalari.push(mesafe + 'm');
+
+    let html = `<div class="medium">`;
+    html += `<strong>📝 ${baslikParcalari.join(' — ')} Koşu Analiz Yorumu</strong><br><br>`;
+
+    if (scored.length > 0) {
+        scored.forEach(s => {
+            const parts = s.text.split(' | ');
+            let gosterilenVar = false;
+            let blokHtml = `<div style="margin-bottom:14px; padding:12px; background:white; border-radius:6px; border-left:4px solid #1e40af;">`;
+            blokHtml += `<strong>${s.key}</strong><br><br>`;
+            parts.forEach(p => {
+                const low = trLower(p);
+                const m = low.match(/^([a-zçğıöşü]+)\s*=/);
+                let etiket = '';
+                let buParcaninPisti = null;
+                if (m) {
+                    if (m[1].startsWith('çim') || m[1].startsWith('cim')) { etiket = '🌱 Çim: '; buParcaninPisti = 'çim'; }
+                    else if (m[1].startsWith('kum')) { etiket = '🏖️ Kum: '; buParcaninPisti = 'kum'; }
+                    else if (m[1].startsWith('sentetik')) { etiket = '🧪 Sentetik: '; buParcaninPisti = 'sentetik'; }
+                    // Pist filtresi seçiliyse sadece o pist'e ait paragrafı göster
+                    if (pistSecim !== 'tümü' && buParcaninPisti && buParcaninPisti !== pistSecim) return;
+                    blokHtml += `<div style="margin-bottom:6px;"><strong>${etiket}</strong>${p.replace(/^[^=]+=\s*/, '').trim()}</div>`;
+                    gosterilenVar = true;
+                } else if (p.trim()) {
+                    blokHtml += `<div style="margin-bottom:6px; color:#475569;">📌 ${p.trim()}</div>`;
+                    gosterilenVar = true;
+                }
+            });
+            blokHtml += `</div>`;
+            if (gosterilenVar) html += blokHtml;
+        });
+
+        // Mesafe girildiyse, geçmiş gerçek koşu verileriyle çapraz kontrol et
+        if (mesafe) {
+            const pistFiltresi = pistSecim === 'tümü' ? null : pistSecim;
+            const filtered = races.filter(r =>
+                kategoriRaceGrupEslesir(kategori, r.kategori) &&
+                sehirIngilizYasUyumu(grupSecim, r.grup) &&
+                Math.abs(r.mesafe - mesafe) <= 100 &&
+                (!pistFiltresi || trLower(r.pist).includes(pistFiltresi))
+            );
+            html += `<div style="margin-top:10px; padding:12px; background:#eff6ff; border-radius:6px;">`;
+            html += `<strong>📊 ${mesafe}m (±100m) için geçmiş veri:</strong> ${filtered.length} koşu bulundu`;
+            if (filtered.length > 0) {
+                const ortKilo = (filtered.reduce((a, r) => a + (parseFloat(r.kilo) || 0), 0) / filtered.length).toFixed(1);
+                const ortPuan = (filtered.reduce((a, r) => a + (r.puan || 0), 0) / filtered.length).toFixed(1);
+                html += ` — Ortalama kazanan kilosu: <strong>${ortKilo} kg</strong>, Ortalama handikap puanı: <strong>${ortPuan}</strong>`;
+            } else {
+                html += ` — bu mesafede henüz veri yok, filtreleri genişletmeyi deneyebilirsin.`;
+            }
+            html += `</div>`;
+        }
+    } else {
+        html += `Bu kombinasyon için uzman notu bulunamadı. Grup veya kategoriyi değiştirip tekrar dene.`;
+    }
+    html += `</div>`;
+    document.getElementById('kosuYorumSonuc').innerHTML = html;
+}
+
+let races = [];
+let extraData = ""; // CSV / TJK ile içe aktarılan satırlar buraya eklenir
+
+function detectDelimiter(sampleLine) {
+    const tabCount = (sampleLine.match(/\t/g) || []).length;
+    const commaCount = (sampleLine.match(/,/g) || []).length;
+    const semiCount = (sampleLine.match(/;/g) || []).length;
+    if (tabCount >= commaCount && tabCount >= semiCount) return '\t';
+    if (semiCount >= commaCount) return ';';
+    return ',';
+}
+
+function csvSatiriDonustur(line, delim) {
+    // Beklenen kolon sırası: Tarih, Şehir, No, Grup, Kategori, Yamak, Mesafe, Pist, Kilo, Ebeveynler, Ücret, Kazanan, Yaş, Derece, Handikap Puanı
+    let cols = delim === ',' ? line.split(',').map(c => c.trim().replace(/^"|"$/g, '')) : line.split(delim);
+    // Eksik kolonları boşlukla tamamla (en az 15 kolon olmalı)
+    while (cols.length < 15) cols.push('');
+    return cols.slice(0, 15).join('\t');
+}
+
+function csvIceAktar(text) {
+    if (!text || !text.trim()) {
+        document.getElementById('csvSonuc').innerHTML = '<span style="color:#b91c1c;">Hiç veri bulunamadı.</span>';
+        return;
+    }
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length === 0) return;
+    const delim = detectDelimiter(lines[0]);
+    let eklenen = 0;
+    const yeniSatirlar = [];
+    lines.forEach(l => {
+        if (l.toLowerCase().includes('tarih') && l.toLowerCase().includes('şehir')) return; // başlık satırını atla
+        const donusturulmus = csvSatiriDonustur(l, delim);
+        if (donusturulmus.split('\t').filter(c => c).length >= 5) {
+            yeniSatirlar.push(donusturulmus);
+            eklenen++;
+        }
+    });
+    if (eklenen === 0) {
+        document.getElementById('csvSonuc').innerHTML = '<span style="color:#b91c1c;">Geçerli satır bulunamadı. Kolon sırasını kontrol et: Tarih, Şehir, No, Grup, Kategori, Yamak, Mesafe, Pist, Kilo, Ebeveynler, Ücret, Kazanan, Yaş, Derece, Handikap Puanı</span>';
+        return;
+    }
+    extraData = yeniSatirlar.join("\n") + (extraData ? "\n" + extraData : "");
+    parseData();
+    sehirListesiniGuncelle();
+    anaTabloyuGuncelle();
+    document.getElementById('csvSonuc').innerHTML = `<span style="color:#15803d;"><strong>${eklenen}</strong> satır başarıyla içe aktarıldı. Toplam koşu sayısı: <strong>${races.length}</strong></span>`;
+}
+
+function csvDosyaIceAktar() {
+    const fileInput = document.getElementById('csvDosya');
+    if (!fileInput.files || !fileInput.files[0]) {
+        document.getElementById('csvSonuc').innerHTML = '<span style="color:#b91c1c;">Önce bir dosya seç.</span>';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => csvIceAktar(e.target.result);
+    reader.readAsText(fileInput.files[0], 'UTF-8');
+}
+
+function csvYapistirIceAktar() {
+    const text = document.getElementById('csvYapistir').value;
+    csvIceAktar(text);
+    document.getElementById('csvYapistir').value = '';
+}
+
+function sehirListesiniGuncelle() {
+    const sehirler = [...new Set(races.map(r => r.sehir))];
+    const sel = document.getElementById('sehir');
+    sel.innerHTML = '<option value="">Tümü</option>';
+    sehirler.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sel.appendChild(opt);
+    });
+}
+
+function anaTabloyuGuncelle() {
+    const table = document.getElementById('mainTable');
+    let tHTML = `<tr><th>Tarih</th><th>Şehir</th><th>Grup</th><th>Koşu Cinsi</th><th>Mesafe</th><th>Pist</th><th>Kilo</th><th>Kazanan</th><th>Handikap Puanı</th></tr>`;
+    races.slice(0, 30).forEach(r => {
+        tHTML += `<tr><td>${r.tarih}</td><td>${r.sehir}</td><td>${r.grup}</td><td>${r.kategori}</td><td>${r.mesafe}</td><td>${r.pist}</td><td>${r.kilo || '-'}</td><td class="favori">${r.birinci}</td><td>${r.puan || '-'}</td></tr>`;
+    });
+    table.innerHTML = tHTML;
+}
+
+function parseData() {
+    const lines = (extraData + "\n" + rawData).split('\n');
+    races = [];
+    for (let line of lines) {
+        if (!line.trim() || line.includes("Tarih")) continue;
+        const cols = line.split('\t');
+        if (cols.length >= 13) {
+            races.push({
+                tarih: cols[0],
+                sehir: cols[1],
+                grup: cols[3],
+                kategori: cols[4],
+                mesafe: parseInt(cols[6]) || 0,
+                pist: cols[7],
+                kilo: cols[8],
+                birinci: cols[11] || '',
+                yas: cols[12],
+                derece: cols[13],
+                puan: parseInt(cols[14]) || 0
+            });
+        }
+    }
+}
+
+function analizYap() {
+    parseData();
+    const sehir = document.getElementById('sehir').value;
+    const pist = document.getElementById('pist').value;
+    const mesafe = parseInt(document.getElementById('mesafe').value) || 0;
+    const grup = document.getElementById('grup').value;
+
+    let filtered = races.filter(r => {
+        let match = true;
+        if (sehir) match = match && r.sehir === sehir;
+        if (pist) match = match && r.pist === pist;
+        if (mesafe) match = match && Math.abs(r.mesafe - mesafe) <= 300;
+        if (grup) match = match && r.grup.toLowerCase().includes(grup.toLowerCase());
+        return match;
+    });
+
+    let html = `<div class="high"><strong>✅ Bulunan benzer koşu: ${filtered.length} adet</strong> <span style="font-weight:normal; color:#475569;">(kullanılan toplam veri: ${races.length} koşu)</span><br>`;
+
+    if (filtered.length > 0) {
+        const sample = filtered.slice(0, 12);
+        html += `<table><tr><th>Tarih</th><th>Şehir</th><th>Koşu Cinsi</th><th>Mesafe</th><th>Pist</th><th>Kilo</th><th>Kazanan</th><th>Handikap Puanı</th></tr>`;
+        sample.forEach(r => {
+            html += `<tr><td>${r.tarih}</td><td>${r.sehir}</td><td>${r.kategori}</td><td>${r.mesafe}</td><td>${r.pist}</td><td>${r.kilo || '-'}</td><td class="favori">${r.birinci}</td><td>${r.puan || '-'}</td></tr>`;
+        });
+        html += `</table>`;
+        html += `<strong>Öneri:</strong> Bu koşullarda yüksek handikap puanlı ve 52-56 kg arası kilolu atlar güçlü.`;
+    } else {
+        html += "Benzer koşu bulunamadı. Filtreleri genişletin.";
+    }
+    html += `</div>`;
+    document.getElementById('sonuc').innerHTML = html;
+}
+
+function atAnaliz() {
+    const at = document.getElementById('atAdi').value.toUpperCase().trim();
+    if (!at) return alert("Lütfen at ismi girin");
+    
+    parseData();
+    const wins = races.filter(r => r.birinci && r.birinci.toUpperCase().includes(at));
+    
+    let msg = wins.length > 0 ? 
+        `<strong>${at}</strong> son verilerde <strong>${wins.length} kez</strong> kazanmış.<br><br>` :
+        `<strong>${at}</strong> son verilerde kazanmadı.<br>`;
+    
+    if (wins.length > 0) {
+        msg += "Kazandığı koşular:<br><ul>";
+        wins.forEach(w => msg += `<li>${w.tarih} - ${w.sehir} • ${w.kategori} • ${w.mesafe}m ${w.pist} • Kilo: ${w.kilo || '-'} • Handikap Puanı: ${w.puan || '-'}</li>`);
+        msg += "</ul>";
+    }
+    document.getElementById('atSonuc').innerHTML = msg;
+}
+
+// ============ TJK Canlı Sorgu (Deneysel Fetch) ============
+function appendMultiParam(params, name, selectEl) {
+    const secilenler = Array.from(selectEl.selectedOptions).map(o => o.value).filter(v => v);
+    secilenler.forEach(v => params.append(name, v));
+}
+
+function tjkSorguUrlOlustur() {
+    const params = new URLSearchParams();
+    params.set('QueryParameter_Tarih_Start', document.getElementById('tjkTarihStart').value.trim());
+    params.set('QueryParameter_Tarih_End', document.getElementById('tjkTarihEnd').value.trim());
+    params.set('QueryParameter_SehirId', document.getElementById('tjkSehir').value);
+    params.set('QueryParameter_IrkId', document.getElementById('tjkIrk').value);
+    appendMultiParam(params, 'QueryParameter_GrupId', document.getElementById('tjkGrup'));
+    appendMultiParam(params, 'QueryParameter_KosuCinsiId', document.getElementById('tjkKosuCinsi'));
+    params.set('QueryParameter_Cinsiyet', document.getElementById('tjkCinsiyet').value);
+    appendMultiParam(params, 'QueryParameter_APRANTIKODU', document.getElementById('tjkYamak'));
+    appendMultiParam(params, 'QueryParameter_Mesafe', document.getElementById('tjkMesafe'));
+    params.set('QueryParameter_PistId', document.getElementById('tjkPist').value);
+    params.set('QueryParameter_BabaAdi', '');
+    params.set('QueryParameter_AnneAdi', '');
+    params.set('Era', 'past');
+    params.set('Sort', 'Tarih desc, Sehir asc, KosuSirasi asc');
+    return 'https://www.tjk.org/TR/YarisSever/Query/Data/KosuSorgulama?' + params.toString();
+}
+
+// Bir alan için birden fazla olası TJK CSS sınıfı/etiketi dener (site küçük değişiklikler yapsa da kırılmasın diye)
+const TJK_ALAN_ADAYLARI = {
+    Tarih: ['sorgu-KosuSorgulama-Tarih', 'sorgu-KosuSorgulama-KosuTarihi'],
+    Sehir: ['sorgu-KosuSorgulama-Sehir', 'sorgu-KosuSorgulama-HipodromAdi'],
+    KosuSirasi: ['sorgu-KosuSorgulama-KosuSirasi', 'sorgu-KosuSorgulama-KosuNo'],
+    KosuGrubuAdi: ['sorgu-KosuSorgulama-KosuGrubuAdi', 'sorgu-KosuSorgulama-YasGrubuAdi', 'sorgu-KosuSorgulama-GrupAdi'],
+    KosuCinsiAdi: ['sorgu-KosuSorgulama-KosuCinsiAdi', 'sorgu-KosuSorgulama-KosuCinsi', 'sorgu-KosuSorgulama-KategoriAdi'],
+    AprantiKosuTipi: ['sorgu-KosuSorgulama-AprantiKosuTipi', 'sorgu-KosuSorgulama-YamakTipi'],
+    Mesafe: ['sorgu-KosuSorgulama-Mesafe'],
+    PistAdi: ['sorgu-KosuSorgulama-PistAdi', 'sorgu-KosuSorgulama-Pist'],
+    Kilo: ['sorgu-KosuSorgulama-Kilo', 'sorgu-KosuSorgulama-BirinciAtKilo'],
+    BabaAnne: ['sorgu-KosuSorgulama-BabaAnne', 'sorgu-KosuSorgulama-Ebeveyn'],
+    IKRAMIYE: ['sorgu-KosuSorgulama-IKRAMIYE', 'sorgu-KosuSorgulama-Ikramiye'],
+    BirinciAtAdi: ['sorgu-KosuSorgulama-BirinciAtAdi', 'sorgu-KosuSorgulama-Kazanan'],
+    BirinciAtAdiYas: ['sorgu-KosuSorgulama-BirinciAtAdiYas', 'sorgu-KosuSorgulama-BirinciAtYasi'],
+    BirinciAtDerece: ['sorgu-KosuSorgulama-BirinciAtDerece', 'sorgu-KosuSorgulama-Derece'],
+    HandikapPuani: ['sorgu-KosuSorgulama-HandikapPuani', 'sorgu-KosuSorgulama-Puan']
+};
+
+// CSS sınıfı eşleşmezse (TJK sayfa yapısı değiştiyse) başlık METNİNE bakarak kolon indeksi bulan yedek sistem.
+// "Koşu Cinsi" gibi alanlar özellikle sınıf isimlerine göre daha çok değişkenlik gösterebildiği için bu yedek çok önemli.
+const TJK_BASLIK_ANAHTAR = {
+    Tarih: ['tarih'],
+    Sehir: ['şehir', 'sehir', 'hipodrom'],
+    KosuSirasi: ['koşu sırası', 'kosu sirasi', 'sıra no', 'sıra'],
+    KosuGrubuAdi: ['grup', 'yaş grubu', 'yaş/ırk', 'yas grubu'],
+    KosuCinsiAdi: ['koşu cinsi', 'kosu cinsi', 'cins', 'kategori'],
+    AprantiKosuTipi: ['yamak', 'aprantı', 'aprapnti'],
+    Mesafe: ['mesafe'],
+    PistAdi: ['pist'],
+    Kilo: ['kilo'],
+    BabaAnne: ['baba', 'anne', 'ebeveyn'],
+    IKRAMIYE: ['ikramiye', 'ücret', 'para'],
+    BirinciAtAdi: ['1.', 'birinci', 'kazanan', 'at adı', 'at ismi'],
+    BirinciAtAdiYas: ['yaşı', 'yaş'],
+    BirinciAtDerece: ['derece'],
+    HandikapPuani: ['handikap', 'puan']
+};
+
+// Bir sonuç tablosunun başlık satırından (th veya ilk tr'deki td) alan->kolon-indeksi eşlemesi çıkarır.
+function tjkBaslikIndeksleriBul(doc) {
+    const baslikRow = doc.querySelector('table thead tr') || doc.querySelector('table tr');
+    if (!baslikRow) return null;
+    const hucreler = Array.from(baslikRow.querySelectorAll('th, td'));
+    if (hucreler.length === 0) return null;
+    const metinler = hucreler.map(h => trLower(h.textContent.trim()));
+    const eslesme = {};
+    for (const alan in TJK_BASLIK_ANAHTAR) {
+        let bulunan = -1;
+        for (let i = 0; i < metinler.length; i++) {
+            if (TJK_BASLIK_ANAHTAR[alan].some(anahtar => metinler[i].includes(anahtar))) { bulunan = i; break; }
+        }
+        eslesme[alan] = bulunan;
+    }
+    return eslesme;
+}
+
+function tjkHtmlAyristirVeIceAktar(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const satirlar = [];
+    const ornekler = [];
+    let kategoriDoluSayac = 0, kiloDoluSayac = 0, handikapDoluSayac = 0;
+    const baslikIndeksleri = tjkBaslikIndeksleriBul(doc);
+    doc.querySelectorAll('tbody tr').forEach(tr => {
+        if (tr.classList.contains('hidable')) return; // "Daha Fazla Göster" satırı
+        const tumTdler = tr.querySelectorAll('td');
+        const al = (field) => {
+            const adaylar = TJK_ALAN_ADAYLARI[field] || [];
+            for (const cls of adaylar) {
+                const td = tr.querySelector('.' + cls);
+                if (td && td.textContent.trim()) return td.textContent.trim();
+            }
+            // Sınıf tabanlı eşleşme bulunamadıysa, başlık metnine göre bulunan kolon indeksini dene
+            if (baslikIndeksleri && baslikIndeksleri[field] >= 0) {
+                const td = tumTdler[baslikIndeksleri[field]];
+                if (td && td.textContent.trim()) return td.textContent.trim();
+            }
+            return '';
+        };
+        const tarih = al('Tarih');
+        if (!tarih) return;
+        const sehir = al('Sehir'), kosuSirasi = al('KosuSirasi'), grup = al('KosuGrubuAdi'),
+              kategori = al('KosuCinsiAdi'), yamak = al('AprantiKosuTipi'), mesafe = al('Mesafe'),
+              pist = al('PistAdi'), kilo = al('Kilo'), babaAnne = al('BabaAnne'), ikramiye = al('IKRAMIYE'),
+              kazanan = al('BirinciAtAdi'), yas = al('BirinciAtAdiYas'), derece = al('BirinciAtDerece'), handikap = al('HandikapPuani');
+        if (kategori) kategoriDoluSayac++;
+        if (kilo) kiloDoluSayac++;
+        if (handikap) handikapDoluSayac++;
+        const cols = [tarih, sehir, kosuSirasi, grup, kategori, yamak, mesafe, pist, kilo, babaAnne, ikramiye, kazanan, yas, derece, handikap];
+        satirlar.push(cols.join('\t'));
+        if (ornekler.length < 5) ornekler.push({ tarih, sehir, grup, kategori, mesafe, pist, kilo, kazanan, handikap });
+    });
+    if (satirlar.length === 0) return { eklenen: 0, toplam: 0, ornekler: [], kategoriDoluSayac: 0, kiloDoluSayac: 0, handikapDoluSayac: 0 };
+    extraData = satirlar.join('\n') + (extraData ? '\n' + extraData : '');
+    parseData();
+    sehirListesiniGuncelle();
+    anaTabloyuGuncelle();
+    const toplamMatch = html.match(/Toplam\s+([\d.,]+)\s+sonuçtan/);
+    return { eklenen: satirlar.length, toplam: toplamMatch ? toplamMatch[1] : '?', ornekler, kategoriDoluSayac, kiloDoluSayac, handikapDoluSayac };
+}
+
+// Doğrudan tarayıcı fetch'i TJK'nın CORS politikası yüzünden engellenir.
+// Bu yüzden sırayla birkaç açık CORS-proxy servisi denenir; biri çalışırsa devam edilmez.
+// NOT: Bunlar ücretsiz üçüncü parti servisler olduğu için zaman zaman yavaş/kapalı olabilirler.
+// Bu yüzden her biri 2 kez denenir ve olabildiğince çok alternatif tanımlanmıştır.
+const TJK_PROXY_ZINCIRI = [
+    { ad: 'Doğrudan', urlOlustur: (u) => u, credentials: 'omit', tip: 'html' },
+    { ad: 'codetabs.com', urlOlustur: (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u), credentials: 'omit', tip: 'html' },
+    { ad: 'allorigins.win (raw)', urlOlustur: (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u), credentials: 'omit', tip: 'html' },
+    { ad: 'allorigins.win (json)', urlOlustur: (u) => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u), credentials: 'omit', tip: 'json' },
+    { ad: 'corsproxy.io', urlOlustur: (u) => 'https://corsproxy.io/?url=' + encodeURIComponent(u), credentials: 'omit', tip: 'html' },
+    { ad: 'thingproxy', urlOlustur: (u) => 'https://thingproxy.freeboard.io/fetch/' + u, credentials: 'omit', tip: 'html' },
+    { ad: 'corsfix.com', urlOlustur: (u) => 'https://proxy.corsfix.com/?' + encodeURIComponent(u), credentials: 'omit', tip: 'html' },
+    { ad: 'cors.lol', urlOlustur: (u) => 'https://api.cors.lol/?url=' + encodeURIComponent(u), credentials: 'omit', tip: 'html' },
+    { ad: 'whateverorigin.org', urlOlustur: (u) => 'https://whateverorigin.org/get?url=' + encodeURIComponent(u), credentials: 'omit', tip: 'json' }
+];
+
+async function tjkCanliSorgula() {
+    const statusEl = document.getElementById('tjkStatus');
+    const hedefUrl = tjkSorguUrlOlustur();
+    document.getElementById('tjkUrlPreview').innerHTML =
+        `<a href="${hedefUrl}" target="_blank" rel="noopener">🔗 Bu sorguyu TJK'da yeni sekmede aç</a>`;
+
+    // Kullanıcı kendi CORS proxy'sini (Cloudflare Worker vb.) girdiyse, en güvenilir seçenek
+    // olduğu için genel proxy listesinin en başına ekle.
+    const ozelProxy = (document.getElementById('ozelProxyUrl').value || '').trim();
+    const zincir = ozelProxy
+        ? [{ ad: 'Kendi Proxy\'n', urlOlustur: (u) => ozelProxy + encodeURIComponent(u), credentials: 'omit', tip: 'html' }, ...TJK_PROXY_ZINCIRI]
+        : TJK_PROXY_ZINCIRI;
+
+    const denenenler = [];
+    const DENEME_SAYISI = 2; // her proxy'yi 2 kez dener (geçici ağ hatalarına karşı)
+    let proxyIndex = 0;
+    let islemBekleniyorGorundu = false;
+    for (const yol of zincir) {
+        proxyIndex++;
+        for (let deneme = 1; deneme <= DENEME_SAYISI; deneme++) {
+            statusEl.innerHTML = `⏳ ${yol.ad} üzerinden deneniyor... (${proxyIndex}/${zincir.length}, deneme ${deneme}/${DENEME_SAYISI})`;
+            try {
+                const istekUrl = yol.urlOlustur(hedefUrl);
+                let res = await fetch(istekUrl, { method: 'GET', mode: 'cors', credentials: yol.credentials, signal: AbortSignal.timeout(20000) });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                let html;
+                if (yol.tip === 'json') {
+                    const data = await res.json();
+                    html = (data && data.contents) ? data.contents : '';
+                } else {
+                    html = await res.text();
+                }
+                if (!html || html.length < 100) {
+                    throw new Error('Boş/çok kısa yanıt (' + (html ? html.length : 0) + ' karakter)');
+                }
+
+                // TJK sorguyu arka planda hazırlarken "Sorgu Tamamlanıyor" ara sayfası döner.
+                // Bu durumda birkaç kez, artan bekleme süreleriyle AYNI adresi tekrar dene.
+                if (trLower(html).includes('sorgu tamamlan')) {
+                    islemBekleniyorGorundu = true;
+                    let hazir = false;
+                    for (let bekleDenemesi = 1; bekleDenemesi <= 4 && !hazir; bekleDenemesi++) {
+                        const bekleSuresi = bekleDenemesi * 2500;
+                        statusEl.innerHTML = `⏳ ${yol.ad}: TJK sorguyu sunucu tarafında hazırlıyor ("Sorgu Tamamlanıyor")... ${bekleSuresi / 1000}sn bekleyip tekrar denenecek (${bekleDenemesi}/4)`;
+                        await new Promise(r => setTimeout(r, bekleSuresi));
+                        try {
+                            res = await fetch(istekUrl, { method: 'GET', mode: 'cors', credentials: yol.credentials, signal: AbortSignal.timeout(20000) });
+                            if (!res.ok) continue;
+                            const yeniHtml = (yol.tip === 'json') ? ((await res.json()).contents || '') : (await res.text());
+                            if (yeniHtml && !trLower(yeniHtml).includes('sorgu tamamlan')) {
+                                html = yeniHtml;
+                                hazir = true;
+                            }
+                        } catch (e) { /* bu bekleme turunu atla, sıradakini dene */ }
+                    }
+                    if (!hazir) {
+                        throw new Error('TJK sorguyu tamamlayamadı ("Sorgu Tamamlanıyor" sayfasında takılı kaldı — tarayıcıdan yapıştırma yöntemini dene)');
+                    }
+                }
+
+                if (!html.includes('sorgu-KosuSorgulama')) {
+                    // Eski sınıf ismi yok ama içerik gelmiş olabilir — yine de ayrıştırmayı dene,
+                    // asıl karar tjkHtmlAyristirVeIceAktar'ın kaç satır bulduğuna göre verilecek.
+                    const ipucu = html.replace(/\s+/g, ' ').slice(0, 150);
+                    denenenler.push(`${yol.ad} (deneme ${deneme}, tanı): sınıf adı yok, dönen içerik başı: "${ipucu}..."`);
+                }
+                const sonuc = tjkHtmlAyristirVeIceAktar(html);
+                if (sonuc.eklenen === 0) {
+                    const ipucu = html.replace(/\s+/g, ' ').slice(0, 150);
+                    throw new Error('Tabloda satır bulunamadı — dönen içerik başı: "' + ipucu + '..."');
+                }
+                let mesaj = `<span style="color:#15803d;">✅ <strong>${yol.ad}</strong> üzerinden bağlantı başarılı! <strong>${sonuc.eklenen}</strong> koşu içe aktarıldı (TJK'da toplam ${sonuc.toplam} sonuç var). Toplam koşu sayısı şu an: <strong>${races.length}</strong></span>`;
+                mesaj += `<br><span style="font-weight:normal; color:#475569; font-size:13px;">Veri kalitesi — Koşu Cinsi dolu: ${sonuc.kategoriDoluSayac}/${sonuc.eklenen} &nbsp;|&nbsp; Kilo dolu: ${sonuc.kiloDoluSayac}/${sonuc.eklenen} &nbsp;|&nbsp; Handikap Puanı dolu: ${sonuc.handikapDoluSayac}/${sonuc.eklenen}</span>`;
+                if (sonuc.kategoriDoluSayac < sonuc.eklenen || sonuc.kiloDoluSayac < sonuc.eklenen) {
+                    mesaj += `<br><span style="color:#b91c1c; font-weight:normal; font-size:13px;">⚠️ Bazı satırlarda Koşu Cinsi/kilo boş geldi — TJK sayfa yapısı değişmiş olabilir, aşağıdaki önizlemeyi kontrol et.</span>`;
+                }
+                if (sonuc.ornekler && sonuc.ornekler.length > 0) {
+                    mesaj += `<div class="scroll" style="max-height:220px; margin-top:8px;"><table><tr><th>Tarih</th><th>Şehir</th><th>Grup</th><th>Koşu Cinsi</th><th>Mesafe</th><th>Pist</th><th>Kilo</th><th>Kazanan</th><th>Handikap</th></tr>`;
+                    sonuc.ornekler.forEach(o => {
+                        mesaj += `<tr><td>${o.tarih}</td><td>${o.sehir}</td><td>${o.grup}</td><td>${o.kategori || '<span style=\"color:#b91c1c;\">boş</span>'}</td><td>${o.mesafe}</td><td>${o.pist}</td><td>${o.kilo || '<span style=\"color:#b91c1c;\">boş</span>'}</td><td class="favori">${o.kazanan}</td><td>${o.handikap || '-'}</td></tr>`;
+                    });
+                    mesaj += `</table></div>`;
+                }
+                statusEl.innerHTML = mesaj;
+                return;
+            } catch (err) {
+                denenenler.push(`${yol.ad} (deneme ${deneme}): ${err.message}`);
+                if (deneme < DENEME_SAYISI) {
+                    await new Promise(r => setTimeout(r, 700));
+                }
+            }
+        }
+    }
+
+    let ekAciklama = '';
+    if (islemBekleniyorGorundu) {
+        ekAciklama = `<br><br><strong>Tespit edilen asıl sebep:</strong> Bu bir CORS/erişim sorunu değil — TJK, sorguyu sunucu tarafında hazırlarken "Sorgu Tamamlanıyor" adında bir ara sayfa döndürüyor ve gerçek sonuçları JavaScript ile bekleyip yüklüyor. Otomatik bağlantı bu JS akışını taklit edemediği için veriye ulaşamıyor — proxy sayısını artırmak bunu çözmez.<br>
+        <strong>Bu yüzden aşağıdaki manuel yöntem bu site için en güvenilir seçenek:</strong> tarayıcın gerçek TJK sayfasını açıp JS'in çalışmasını beklediği için sonuçlar orada normal şekilde yükleniyor.`;
+    }
+    statusEl.innerHTML = `<span style="color:#b91c1c;">⚠️ Denenen ${zincir.length} yöntemin (her biri 2 denemeyle) hiçbiri veri getiremedi:<br>
+    <small>${denenenler.join('<br>')}</small>${ekAciklama}<br><br>
+    <strong>Kesin çözüm:</strong> "🔗 yeni sekmede aç" bağlantısına tıkla → açılan TJK sayfasında sonuçların yüklenmesini bekle → tabloyu seç (Ctrl+A / Ctrl+C) → yukarıdaki "📋 Yapıştırarak İçe Aktar" kutusuna yapıştır ve "İçe Aktar" butonuna bas.</span>`;
+}
+
+window.onload = () => {
+    parseData();
+    sehirListesiniGuncelle();
+    anaTabloyuGuncelle();
+    const kayitliProxy = localStorage.getItem('kk_ozelProxyUrl');
+    if (kayitliProxy) document.getElementById('ozelProxyUrl').value = kayitliProxy;
+};
+</script>
+</body>
+</html>
